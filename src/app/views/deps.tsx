@@ -45,7 +45,25 @@ export function DepsPanel({ d }: { d: ScanView["dependencies"] }) {
         {d.issues.length === 0 ? (
           <EmptyState title="No dependency issues">Every third-party import is declared in a manifest or lockfile.</EmptyState>
         ) : (
-          <div className="overflow-x-auto rounded-lg border border-line bg-surface">
+          <>
+          <ul data-testid="dep-cards" aria-label="Dependency issues" className="list-none space-y-3 p-0 md:hidden">
+            {d.issues.map((i, k) => {
+              const st = STATUS[i.registryStatus] ?? STATUS.unknown!;
+              return (
+                <li key={k} data-testid="dep-card" className="rounded-lg border border-line bg-surface p-3 text-xs">
+                  <div className="break-all font-mono text-sm font-semibold">{i.packageName}</div>
+                  {i.typosquatOf && <div className="text-muted">looks like {i.typosquatOf}</div>}
+                  <dl className="mt-2 grid grid-cols-[84px_1fr] gap-x-3 gap-y-1.5">
+                    <dt className="text-muted">Registry</dt><dd>{i.registry === "npm" ? "npm" : "PyPI"}</dd>
+                    <dt className="text-muted">Status</dt><dd><span className={`inline-flex h-5 items-center gap-1 rounded px-1.5 font-medium ${st.cls}`}><span aria-hidden>{st.glyph}</span>{st.text}</span></dd>
+                    <dt className="text-muted">Verdict</dt><dd className="flex flex-wrap items-center gap-2"><LabelBadge label={i.label} /><span className="text-muted">{KIND[i.kind] ?? i.kind}</span></dd>
+                    <dt className="text-muted">Where</dt><dd className="num break-all font-mono">{i.file}:{i.line}</dd>
+                  </dl>
+                </li>
+              );
+            })}
+          </ul>
+          <div className="hidden overflow-x-auto rounded-lg border border-line bg-surface md:block">
             <table className="w-full min-w-[640px] border-collapse text-left text-xs">
               <caption className="sr-only">Dependency issues</caption>
               <thead className="text-muted"><tr className="border-b border-line">{["Package", "Registry", "Status", "Verdict", "Where"].map((h) => <th key={h} scope="col" className="px-3 py-2 font-medium">{h}</th>)}</tr></thead>
@@ -65,6 +83,7 @@ export function DepsPanel({ d }: { d: ScanView["dependencies"] }) {
               </tbody>
             </table>
           </div>
+          </>
         )}
       </section>
 

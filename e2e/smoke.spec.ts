@@ -69,3 +69,21 @@ test("live scan failure shows the reason and never a token", async ({ page }) =>
   await expect(alert).toContainText("GitHub API 403");
   await expect(alert).not.toContainText("ghp_abcdefghijklmnopqrstuv");
 });
+
+test("dependencies reflow into cards at 390px with no horizontal scroll; table on desktop", async ({ browser }) => {
+  const mobile = await browser.newContext({ viewport: { width: 390, height: 844 } });
+  const m = await mobile.newPage();
+  await m.goto("/#/deps");
+  await expect(m.getByTestId("dep-card")).toHaveCount(2);
+  await expect(m.getByTestId("dep-cards")).toBeVisible();
+  await expect(m.getByRole("table")).toBeHidden();
+  expect(await m.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(0);
+  await mobile.close();
+
+  const desktop = await browser.newContext({ viewport: { width: 1280, height: 800 } });
+  const d = await desktop.newPage();
+  await d.goto("/#/deps");
+  await expect(d.getByRole("table")).toBeVisible();
+  await expect(d.getByTestId("dep-cards")).toBeHidden();
+  await desktop.close();
+});

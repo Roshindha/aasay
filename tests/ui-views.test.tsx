@@ -198,6 +198,28 @@ describe("Evidence graph view", () => {
   });
 });
 
+describe("Dependencies view", () => {
+  it("renders one card per issue with status as text plus icon, alongside the desktop table", async () => {
+    mockFetch(okSeeded);
+    go("deps");
+    render(<Dashboard />);
+    const cards = await screen.findAllByTestId("dep-card");
+    expect(cards).toHaveLength(seededView.dependencies.issues.length);
+    expect(cards).toHaveLength(2);
+    const phantom = cards.find((c) => c.textContent?.includes("express-validator-pro"))!;
+    expect(within(phantom).getByText("Not found")).toBeInTheDocument();
+    expect(within(phantom).getByText("✗")).toHaveAttribute("aria-hidden", "true");
+    expect(within(phantom).getByText("npm")).toBeInTheDocument();
+    expect(within(phantom).getByTestId("label-badge")).toHaveTextContent("Confirmed");
+    expect(within(phantom).getByText("src/server.ts:3")).toBeInTheDocument();
+    // desktop table is still present (CSS shows exactly one of the two per breakpoint)
+    expect(screen.getByRole("table")).toBeInTheDocument();
+    expect(screen.getByTestId("dep-cards").className).toContain("md:hidden");
+    const wrap = screen.getByRole("table").closest("div")!;
+    expect(wrap).toHaveClass("hidden", "md:block");
+  });
+});
+
 describe("Handoffs view", () => {
   it("copies the handoff with one click and confirms", async () => {
     const writes: string[] = [];
