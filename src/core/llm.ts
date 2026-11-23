@@ -73,7 +73,7 @@ export class OpenAiLlmClient implements LlmClient {
 }
 
 /** Heuristic unless OpenAI is explicitly requested (ASSAY_LLM=openai) AND OPENAI_API_KEY is set. Never logs the key. */
-export function createLlm(env: NodeJS.ProcessEnv = process.env): LlmClient {
+export function createLlm(env: Record<string, string | undefined> = process.env): LlmClient {
   if (env.ASSAY_LLM === "openai" && env.OPENAI_API_KEY) return new OpenAiLlmClient(env.OPENAI_API_KEY, env.ASSAY_MODEL || "gpt-4.1-mini");
   return new HeuristicLlmClient();
 }
