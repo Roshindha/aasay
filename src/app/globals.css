@@ -1,1 +1,112 @@
 @import "tailwindcss";
+
+/*
+ * Design tokens. Dark is the default; light is applied via [data-theme="light"],
+ * which an inline script in layout.tsx sets before first paint from localStorage or prefers-color-scheme.
+ * Colour roles: "confirmed" and "likely" each get one accent, "speculative" is muted.
+ * Severity is never expressed by hue (icon + text only), so labels keep exclusive use of the accents.
+ */
+:root {
+  color-scheme: dark;
+  --bg: #0d0f12;
+  --surface: #14171b;
+  --surface-2: #1b1f25;
+  --border: #2c333c;
+  --text: #e8eaed;
+  --text-muted: #9ca5b0;
+  --focus: #6aa5ff;
+  --link: #8ab8ff;
+
+  --confirmed-fg: #ff8f8f;
+  --confirmed-bg: #3b1619;
+  --confirmed-solid: #ff6b6b;
+  --likely-fg: #f6bd57;
+  --likely-bg: #3a2a0e;
+  --likely-solid: #f0a82e;
+  --speculative-fg: #aab3be;
+  --speculative-bg: #262b33;
+  --speculative-solid: #7d8794;
+
+  --pass-fg: #5fd49a;
+  --pass-bg: #0f2e21;
+  --fail-fg: var(--confirmed-fg);
+  --fail-bg: var(--confirmed-bg);
+
+  --code-bg: #0a0c0f;
+  --add-bg: #10301f;
+  --del-bg: #3a1619;
+}
+
+:root[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f5f6f8;
+  --surface: #ffffff;
+  --surface-2: #eef0f3;
+  --border: #d3d8df;
+  --text: #14181d;
+  --text-muted: #4a5360;
+  --focus: #1b5fd1;
+  --link: #1450b4;
+
+  --confirmed-fg: #a8201a;
+  --confirmed-bg: #fde9e7;
+  --confirmed-solid: #d4372f;
+  --likely-fg: #805000;
+  --likely-bg: #fcefd2;
+  --likely-solid: #c07a00;
+  --speculative-fg: #4a5360;
+  --speculative-bg: #e8ebef;
+  --speculative-solid: #7a8491;
+
+  --pass-fg: #05683c;
+  --pass-bg: #d9f3e5;
+
+  --code-bg: #f0f2f5;
+  --add-bg: #dcf3e4;
+  --del-bg: #fbe3e1;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-line: var(--border);
+  --color-fg: var(--text);
+  --color-muted: var(--text-muted);
+  --color-focus: var(--focus);
+  --color-link: var(--link);
+  --color-confirmed: var(--confirmed-fg);
+  --color-confirmed-bg: var(--confirmed-bg);
+  --color-confirmed-solid: var(--confirmed-solid);
+  --color-likely: var(--likely-fg);
+  --color-likely-bg: var(--likely-bg);
+  --color-likely-solid: var(--likely-solid);
+  --color-speculative: var(--speculative-fg);
+  --color-speculative-bg: var(--speculative-bg);
+  --color-speculative-solid: var(--speculative-solid);
+  --color-pass: var(--pass-fg);
+  --color-pass-bg: var(--pass-bg);
+  --color-code: var(--code-bg);
+  --color-add: var(--add-bg);
+  --color-del: var(--del-bg);
+  --font-sans: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+html { background: var(--bg); color: var(--text); }
+body { margin: 0; min-height: 100dvh; background: var(--bg); color: var(--text); font-family: var(--font-sans); font-size: 14px; line-height: 20px; -webkit-font-smoothing: antialiased; }
+/* Prevent the scrollbar appearing/disappearing and shifting content as views change height */
+html { scrollbar-gutter: stable; }
+
+:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; border-radius: 4px; }
+::selection { background: color-mix(in srgb, var(--focus) 35%, transparent); }
+
+.num { font-variant-numeric: tabular-nums; }
+
+@keyframes assay-pulse { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+.skeleton { background: var(--surface-2); border-radius: 6px; animation: assay-pulse 1.4s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; scroll-behavior: auto !important; }
+  .skeleton { animation: none; }
+}
