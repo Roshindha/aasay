@@ -128,7 +128,7 @@ function parseRequirements(text: string, d: DeclaredDeps) {
 }
 
 function parsePyproject(text: string, d: DeclaredDeps) {
-  const t = parseToml(text) as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const t = parseToml(text) as Record<string, any>;
   const add = (arr: unknown) => {
     if (Array.isArray(arr)) for (const r of arr) if (typeof r === "string") { const n = pyRequirementName(r); if (n) d.pyDirect.add(n); }
   };
@@ -143,7 +143,7 @@ function parsePyproject(text: string, d: DeclaredDeps) {
     };
     addTbl(poetry.dependencies);
     addTbl(poetry["dev-dependencies"]);
-    for (const g of Object.values<any>(poetry.group ?? {})) addTbl(g?.dependencies); // eslint-disable-line @typescript-eslint/no-explicit-any
+    for (const g of Object.values<any>(poetry.group ?? {})) addTbl(g?.dependencies);
     for (const src of poetry.source ?? []) if (src?.url && !/pypi\.org/.test(src.url)) d.customRegistry.pypi = true;
   }
   for (const key of ["pip", "uv"]) {
@@ -154,7 +154,7 @@ function parsePyproject(text: string, d: DeclaredDeps) {
 }
 
 function parsePipfile(text: string, d: DeclaredDeps) {
-  const t = parseToml(text) as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
+  const t = parseToml(text) as Record<string, any>;
   for (const k of ["packages", "dev-packages"]) for (const n of Object.keys(t[k] ?? {})) d.pyDirect.add(normalizePyName(n));
   for (const s of t.source ?? []) if (s?.url && !/pypi\.org/.test(s.url)) d.customRegistry.pypi = true;
 }

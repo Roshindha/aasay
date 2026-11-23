@@ -1,3 +1,5 @@
+import { Dashboard } from "./dashboard";
+
 export default function Home() {
-  return <main className="p-8">Assay</main>;
+  return <Dashboard />;
 }
