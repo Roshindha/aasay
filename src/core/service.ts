@@ -23,6 +23,8 @@ export interface Scan {
   review: ReviewResult;
   /** Present only for seeded scans: metrics against the answer key. Never computed for live/local scans. */
   eval?: EvalResult;
+  /** True when no registry lookup went to the network: ASSAY_OFFLINE / offline option, or every answer came from fixtures or cache */
+  offline: boolean;
   notes: string[];
 }
 
@@ -47,33 +49,36 @@ const scanId = (files: SourceFile[], tag: string) =>
 
 export async function scanSeeded(): Promise<Scan> {
   const { review, result, files } = await runSeededEval();
-  return putScan({ id: scanId(files, "seeded"), source: "seeded", label: "fixtures/seeded-demo (offline, self-authored benchmark)", files, review, eval: result, notes: ["Registry answers come from recorded fixtures; no network used."] });
+  return putScan({ id: scanId(files, "seeded"), source: "seeded", label: "fixtures/seeded-demo (offline, self-authored benchmark)", files, review, eval: result, offline: true, notes: ["Registry answers come from recorded fixtures; no network used."] });
 }
 
-export interface ScanOptions { offline?: boolean }
+export interface ScanOptions { offline?: boolean; /** injectable transport for registry lookups (tests) */ registryFetch?: FetchLike }
 
 function client(opts: ScanOptions) {
-  return new RegistryClient({ mode: opts.offline || process.env.ASSAY_OFFLINE === "1" ? "offline" : "online" });
+  return new RegistryClient({ mode: opts.offline || process.env.ASSAY_OFFLINE === "1" ? "offline" : "online", fetchImpl: opts.registryFetch });
 }
+const usedNoNetwork = (c: RegistryClient) => c.mode === "offline" || c.networkCalls === 0;
 
 export async function scanLocal(dir: string, opts: ScanOptions = {}): Promise<Scan> {
   const root = path.resolve(dir);
   const files = loadDir(root);
   if (!files.length) throw new Error(`No reviewable files found under ${root}`);
-  const review = await runReview({ files, registry: client(opts), llm: createLlm() });
-  return putScan({ id: scanId(files, "local"), source: "local", label: root, files, review, notes: [`${files.length} files inspected`] });
+  const reg = client(opts);
+  const review = await runReview({ files, registry: reg, llm: createLlm() });
+  return putScan({ id: scanId(files, "local"), source: "local", label: root, files, review, offline: usedNoNetwork(reg), notes: [`${files.length} files inspected`] });
 }
 
 export async function scanGithub(url: string, opts: ScanOptions & { fetchImpl?: FetchLike } = {}): Promise<Scan> {
   const ref = parseGithubUrl(url);
   const fetched = await fetchGithub(ref, { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl });
   if (!fetched.files.length) throw new Error("No reviewable files were fetched from that URL.");
-  const review = await runReview({ files: fetched.files, registry: client(opts), llm: createLlm() });
+  const reg = client(opts);
+  const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm() });
   const notes = [`ref ${fetched.ref.slice(0, 10)}`, `${fetched.files.length} files fetched`];
   if (fetched.truncated) notes.push("truncated by file cap");
   if (fetched.skipped.length) notes.push(`${fetched.skipped.length} skipped (size/cap)`);
   if (ref.pull) notes.push(`PR #${ref.pull}: ${fetched.changed?.length ?? 0} changed files; manifests included for context`);
-  return putScan({ id: scanId(fetched.files, "github"), source: "github", label: url, files: fetched.files, review, notes });
+  return putScan({ id: scanId(fetched.files, "github"), source: "github", label: url, files: fetched.files, review, offline: usedNoNetwork(reg), notes });
 }
 
 export async function tournamentFor(scanIdValue: string | undefined, findingId: string): Promise<TournamentResult & { scanId: string; handoff: string }> {
@@ -96,7 +101,7 @@ export async function scoreCustomPatch(scanIdValue: string | undefined, findingI
 export function scanView(s: Scan) {
   const d = s.review.deps;
   return {
-    id: s.id, source: s.source, label: s.label, notes: s.notes, llm: s.review.llm,
+    id: s.id, source: s.source, label: s.label, notes: s.notes, llm: s.review.llm, offline: s.offline,
     findings: s.review.findings, graph: s.review.graph, telemetry: s.review.telemetry,
     eval: s.eval ?? null,
     summary: {

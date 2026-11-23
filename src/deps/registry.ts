@@ -46,6 +46,8 @@ export class RegistryClient {
   private memo = new Map<string, RegistryLookup>();
   /** Keys consulted, in order, for context-budget telemetry */
   readonly consulted: string[] = [];
+  /** Number of lookups that actually went to the network (cache and fixture hits do not count) */
+  networkCalls = 0;
 
   constructor(opts: RegistryClientOptions = {}) {
     this.mode = opts.mode ?? "offline";
@@ -97,6 +99,7 @@ export class RegistryClient {
     } catch { /* no cache */ }
 
     try {
+      this.networkCalls++;
       const res = await allowlistedFetch(registryUrl(registry, name), { method: "GET", headers: { accept: "application/json" } }, this.fetchImpl);
       const status: RegistryStatus = res.status === 200 ? "exists" : res.status === 404 ? "not-found" : "unknown";
       if (status !== "unknown") {

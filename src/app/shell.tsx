@@ -8,13 +8,16 @@ import { VIEWS, type ViewId } from "./views";
 const subscribeOnline = (cb: () => void) => { window.addEventListener("online", cb); window.addEventListener("offline", cb); return () => { window.removeEventListener("online", cb); window.removeEventListener("offline", cb); }; };
 const useBrowserOnline = () => useSyncExternalStore(subscribeOnline, () => navigator.onLine, () => true);
 
-/** Offline/online status derived from what the UI knows: seeded runs always use recorded fixtures; live scans use the registries. */
-export function EnvStatus({ source, liveLoaded, browserOnline }: { source: Source; liveLoaded: boolean; browserOnline: boolean }) {
-  const offline = !browserOnline || source === "seeded";
-  const text = !browserOnline ? "Browser offline" : source === "seeded" ? "Offline · recorded fixtures" : liveLoaded ? "Online · GitHub, npm, PyPI" : "Online";
+/** Status comes from the API's `offline` field (ASSAY_OFFLINE, or no registry lookup left the machine), not from guessing. */
+export function EnvStatus({ source, offline, browserOnline }: { source: Source; offline: boolean | null; browserOnline: boolean }) {
+  const text = !browserOnline ? "Browser offline"
+    : offline === null ? "Checking…"
+    : offline ? (source === "seeded" ? "Offline · recorded fixtures" : "Offline · registry from fixtures/cache")
+    : "Online · registry lookups live";
+  const isOffline = !browserOnline || offline === true;
   return (
-    <span data-testid="env-status" data-mode={offline ? "offline" : "online"} className="inline-flex h-8 items-center gap-1.5 rounded border border-line bg-surface px-2 text-xs font-medium">
-      {offline ? <WifiOff width={14} height={14} /> : <Wifi width={14} height={14} />}
+    <span data-testid="env-status" data-mode={offline === null && browserOnline ? "unknown" : isOffline ? "offline" : "online"} className="inline-flex h-8 items-center gap-1.5 rounded border border-line bg-surface px-2 text-xs font-medium">
+      {isOffline ? <WifiOff width={14} height={14} /> : <Wifi width={14} height={14} />}
       <span>{text}</span>
     </span>
   );
@@ -39,7 +42,7 @@ function SourceSwitch() {
 }
 
 export function Shell({ view, onNavigate, children }: { view: ViewId; onNavigate: (v: ViewId) => void; children: ReactNode }) {
-  const { source, live } = useApp();
+  const { source, scan } = useApp();
   const browserOnline = useBrowserOnline();
   const meta = VIEWS.find((v) => v.id === view)!;
   const groups = ["Run", "Analyze", "Fix"] as const;
@@ -75,7 +78,7 @@ export function Shell({ view, onNavigate, children }: { view: ViewId; onNavigate
             <h1 className="truncate text-xl font-semibold leading-6">{meta.title}</h1>
           </div>
           <div className="flex items-center gap-2">
-            <EnvStatus source={source} liveLoaded={!!live.data} browserOnline={browserOnline} />
+            <EnvStatus source={source} offline={scan.data ? scan.data.offline : null} browserOnline={browserOnline} />
             <SourceSwitch />
             <span className="hidden md:inline"><ThemeToggle /></span>
           </div>

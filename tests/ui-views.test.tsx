@@ -4,6 +4,7 @@ import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { Dashboard } from "@/app/dashboard";
+import { EnvStatus } from "@/app/shell";
 import { scanSeeded, scanView, tournamentFor, type ScanView } from "@/core/service";
 
 let seededView: ScanView;
@@ -106,7 +107,7 @@ describe("Live scan view", () => {
   });
 
   it("renders a live result as counts only (no recall/precision)", async () => {
-    mockFetch((u, b) => (u === "/api/live" ? { status: 200, json: { ...seededView, id: "github-1", source: "github", label: "https://github.com/o/r", eval: null, notes: ["3 files fetched"] } } : okSeeded(u, b)));
+    mockFetch((u, b) => (u === "/api/live" ? { status: 200, json: { ...seededView, id: "github-1", source: "github", label: "https://github.com/o/r", eval: null, offline: false, notes: ["3 files fetched"] } } : okSeeded(u, b)));
     go("live");
     render(<Dashboard />);
     await userEvent.type(await screen.findByLabelText(/GitHub repository/), "https://github.com/o/r");
@@ -114,7 +115,33 @@ describe("Live scan view", () => {
     const result = await screen.findByRole("region", { name: "Live scan result" });
     expect(result).toHaveTextContent("11");
     expect(result).not.toHaveTextContent(/recall|precision/i);
+    expect(screen.getByTestId("env-status")).toHaveAttribute("data-mode", "online");
     expect(screen.getByTestId("env-status")).toHaveTextContent("Online");
+  });
+
+  it("badge follows the API's offline field for live scans, not a guess", async () => {
+    mockFetch((u, b) => (u === "/api/live" ? { status: 200, json: { ...seededView, id: "github-2", source: "github", label: "https://github.com/o/r", eval: null, offline: true, notes: [] } } : okSeeded(u, b)));
+    go("live");
+    render(<Dashboard />);
+    await userEvent.type(await screen.findByLabelText(/GitHub repository/), "https://github.com/o/r");
+    await userEvent.click(screen.getByRole("button", { name: "Scan" }));
+    await screen.findByRole("region", { name: "Live scan result" });
+    expect(screen.getByTestId("env-status")).toHaveAttribute("data-mode", "offline");
+    expect(screen.getByTestId("env-status")).toHaveTextContent("Offline · registry from fixtures/cache");
+  });
+});
+
+describe("EnvStatus", () => {
+  it.each([
+    { browserOnline: true, offline: true, source: "seeded", mode: "offline", text: "Offline · recorded fixtures" },
+    { browserOnline: true, offline: true, source: "live", mode: "offline", text: "Offline · registry from fixtures/cache" },
+    { browserOnline: true, offline: false, source: "live", mode: "online", text: "Online · registry lookups live" },
+    { browserOnline: true, offline: null, source: "seeded", mode: "unknown", text: "Checking…" },
+    { browserOnline: false, offline: false, source: "live", mode: "offline", text: "Browser offline" },
+  ] as const)("$source offline=$offline browserOnline=$browserOnline -> $text", ({ browserOnline, offline, source, mode, text }) => {
+    render(<EnvStatus source={source} offline={offline} browserOnline={browserOnline} />);
+    expect(screen.getByTestId("env-status")).toHaveAttribute("data-mode", mode);
+    expect(screen.getByTestId("env-status")).toHaveTextContent(text);
   });
 });
 
