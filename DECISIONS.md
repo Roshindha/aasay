@@ -23,3 +23,4 @@ Every default chosen or changed while building from PLAN.md. Numbers match the p
 - **F3 Registry 404 semantics.** A 404 for a scoped package, or any lookup when a custom registry is configured (`.npmrc` registry / `.npmrc` scope registry, `pip.conf`/`--index-url`/`[[tool.poetry.source]]`), is `likely`, not `confirmed`.
 - **F4 Patch application.** Gate uses `git apply` in a temp dir (fallback `patch -p1`); diffs are generated with the `diff` package.
 - **F5 Tests of MCP.** The stdio test spawns the server through `tsx` and talks to it with the SDK client.
+- **F6 Local Python modules.** Any file stem or directory name inside the scanned repo counts as a local module (covers sibling and src-layout imports); this can mask a third-party import that shares a name with a repo directory.

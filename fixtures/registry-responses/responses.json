@@ -1,0 +1,13 @@
+{
+  "_comment": "Offline registry responses used by the seeded demo and tests. 'not-found' = registry returned 404.",
+  "npm": {
+    "express-validator-pro": "not-found",
+    "left-padder": "not-found",
+    "zod-utils-lite": "exists",
+    "lodahs": "exists"
+  },
+  "pypi": {
+    "fastjsonvalidate": "not-found",
+    "reqeusts": "exists"
+  }
+}
