@@ -27,13 +27,11 @@ Optional environment variables (see `.env.example`; never logged):
 | Var | Purpose |
 |-----|---------|
 | `GITHUB_TOKEN` | Higher rate limits / private repos for live scans. Sent only to `api.github.com`. |
-| `OPENAI_API_KEY`, `ASSAY_LLM=openai` | Opt-in model-proposed findings (always labelled *speculative*). Both must be set; otherwise a deterministic offline client is used. |
-| `ASSAY_MODEL` | Model for the OpenAI client (default `gpt-4.1-mini`). |
-| `ASSAY_OFFLINE=1` | Skip live registry lookups for local/GitHub scans. |
+| `ASSAY_OFFLINE=1` | Skip live registry lookups for local/GitHub scans (recorded fixtures and cache only). |
 
 ### Network policy
 
-Data fetching goes through one allowlist (`src/core/allowlist.ts`): `api.github.com`, `registry.npmjs.org`, `pypi.org`, https only, redirects re-checked. Anything else is rejected (tested). The one exception is the optional OpenAI client, which is off by default and pinned to `api.openai.com`.
+Data fetching goes through one allowlist (`src/core/allowlist.ts`): `api.github.com`, `registry.npmjs.org`, `pypi.org`, https only, redirects re-checked. Anything else is rejected (tested). The allowlist is absolute: there is no exception, and no model API is contacted. Findings come from deterministic heuristics only.
 
 ## MCP client configuration
 

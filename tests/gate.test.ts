@@ -52,8 +52,8 @@ describe("gate: applying diffs in a temp dir", () => {
 
 describe("gate: secrets never reach the check environment", () => {
   const SECRETS = {
-    OPENAI_API_KEY: "sk-test-AAAA", GITHUB_TOKEN: "ghp_BBBB", AWS_SECRET_ACCESS_KEY: "CCCC", MY_SERVICE_PASSWORD: "DDDD",
-    SESSION_COOKIE: "EEEE", DB_CREDENTIALS: "FFFF", ASSAY_MODEL_KEY_X: "GGGG",
+    SERVICE_API_KEY: "sk-test-AAAA", GITHUB_TOKEN: "ghp_BBBB", AWS_SECRET_ACCESS_KEY: "CCCC", MY_SERVICE_PASSWORD: "DDDD",
+    SESSION_COOKIE: "EEEE", DB_CREDENTIALS: "FFFF", ASSAY_EXTRA_KEY_X: "GGGG",
   };
   const saved: Record<string, string | undefined> = {};
   beforeEach(() => { for (const [k, v] of Object.entries(SECRETS)) { saved[k] = process.env[k]; process.env[k] = v; } });
