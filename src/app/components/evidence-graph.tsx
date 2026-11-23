@@ -11,7 +11,7 @@ type Kind = Node["kind"];
 
 export const COLUMNS: Kind[] = ["finding", "file", "dependency", "manifest"];
 const KIND_TEXT: Record<Kind, { tag: string; name: string; plural: string }> = {
-  finding: { tag: "FND", name: "Finding", plural: "Findings" }, file: { tag: "FILE", name: "File", plural: "Files" }, dependency: { tag: "DEP", name: "Dependency", plural: "Dependencies" }, manifest: { tag: "MAN", name: "Manifest", plural: "Manifests" },
+  finding: { tag: "FINDING", name: "Finding", plural: "Findings" }, file: { tag: "FILE", name: "File", plural: "Files" }, dependency: { tag: "DEPENDENCY", name: "Dependency", plural: "Dependencies" }, manifest: { tag: "MANIFEST", name: "Manifest", plural: "Manifests" },
 };
 const EDGE_TEXT: Record<Edge["kind"], string> = {
   "located-in": "located in", imports: "imports", "declared-in": "declared in", duplicates: "also reported by", "missing-from": "missing from",
@@ -25,7 +25,7 @@ const EDGE_STYLE: Record<Edge["kind"], { dash?: string; width: number; color: st
   "missing-from": { width: 2, color: "var(--confirmed-solid)", dash: "7 4" },
 };
 
-export const NODE_W = 232, NODE_H = 30, ROW_GAP = 10, COL_GAP = 56, PAD = 12, HEAD = 22;
+export const NODE_W = 256, NODE_H = 30, ROW_GAP = 10, COL_GAP = 40, PAD = 12, HEAD = 22;
 
 export function layoutGraph(g: EvidenceGraph) {
   const pos = new Map<string, { x: number; y: number }>();
@@ -40,7 +40,6 @@ const labelOf = (n: Node): { text: string; label?: Finding["label"] } => {
   return m ? { text: m[1]!.replace(/`/g, ""), label: m[2] as Finding["label"] } : { text: n.label.replace(/`/g, "") };
 };
 const STRIPE: Record<string, string> = { confirmed: "var(--confirmed-solid)", likely: "var(--likely-solid)", speculative: "var(--speculative-solid)" };
-const clip = (s: string, n: number) => (s.length > n ? s.slice(0, n - 1) + "…" : s);
 
 export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; findings: Finding[] }) {
   const [selected, setSelected] = useState<string | null>(null);
@@ -99,13 +98,13 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
               const { text, label } = labelOf(n);
               const isSel = n.id === selected, dim = !!selected && !connected.has(n.id);
               return (
-                <g key={n.id} role="button" tabIndex={0} aria-pressed={isSel} aria-label={`${KIND_TEXT[n.kind].name}: ${text}${label ? `, ${label}` : ""}`} data-testid="graph-node"
+                <g key={n.id} role="button" tabIndex={0} aria-pressed={isSel} aria-label={`${KIND_TEXT[n.kind].tag} ${text}`} data-testid="graph-node"
                   onClick={() => pick(n.id)} onKeyDown={onKey(n.id)} opacity={dim ? 0.35 : 1} style={{ cursor: "pointer" }}>
-                  <title>{text}</title>
+                  <clipPath id={`clip-${n.id.replace(/[^\w]/g, "_")}`}><rect x={p.x + 72} y={p.y} width={NODE_W - 80} height={NODE_H} /></clipPath>
                   <rect x={p.x} y={p.y} width={NODE_W} height={NODE_H} rx={5} fill="var(--surface-2)" stroke={isSel ? "var(--focus)" : "var(--border)"} strokeWidth={isSel ? 2 : 1} />
                   {label && <rect x={p.x} y={p.y} width={4} height={NODE_H} rx={2} fill={STRIPE[label]} />}
-                  <text x={p.x + 12} y={p.y + 19} fontSize="9" fontWeight="700" fontFamily="var(--font-mono)" fill="var(--text-muted)">{KIND_TEXT[n.kind].tag}</text>
-                  <text x={p.x + 44} y={p.y + 19} fontSize="12" fill="var(--text)">{clip(text, 28)}</text>
+                  <text x={p.x + 12} y={p.y + 19} fontSize="9" fontWeight="700" fontFamily="var(--font-mono)" fill="var(--text-muted)">{`${KIND_TEXT[n.kind].tag} `}</text>
+                  <text x={p.x + 72} y={p.y + 19} fontSize="12" fill="var(--text)" clipPath={`url(#clip-${n.id.replace(/[^\w]/g, "_")})`}>{text}</text>
                 </g>
               );
             })}
