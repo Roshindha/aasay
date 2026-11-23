@@ -69,7 +69,29 @@ For a finding, generators propose candidates (for bad imports: remove, replace, 
 
 ## UI
 
-Seeded run (metrics), Live scan (GitHub URL; counts only), Verdicts, Evidence graph, Tournament, Handoffs, Dependencies panel, and Context budget (inspected files, estimated tokens = chars ÷ 4, cache keys).
+A left-nav app shell (Run: Seeded runs, Live scan · Analyze: Verdicts, Evidence graph, Dependencies, Context budget · Fix: Tournament, Handoffs) with a top bar showing the offline/online status, a Seeded/Live source switch and a light/dark toggle (first load follows your OS setting). Every view has loading, empty and error states; every finding shows its label, severity, file:line and evidence; diffs and handoffs have copy buttons. The UI makes no network requests other than to its own API routes and uses system fonts only.
+
+| View | Desktop (1440px) | Mobile (390px) |
+|------|------------------|----------------|
+| Seeded runs | ![](docs/screenshots/after/seeded-desktop.png) | ![](docs/screenshots/after/seeded-mobile.png) |
+| Live scan | ![](docs/screenshots/after/live-desktop.png) | ![](docs/screenshots/after/live-mobile.png) |
+| Verdicts | ![](docs/screenshots/after/verdicts-desktop.png) | ![](docs/screenshots/after/verdicts-mobile.png) |
+| Evidence graph | ![](docs/screenshots/after/graph-desktop.png) | ![](docs/screenshots/after/graph-mobile.png) |
+| Dependencies | ![](docs/screenshots/after/deps-desktop.png) | ![](docs/screenshots/after/deps-mobile.png) |
+| Context budget | ![](docs/screenshots/after/budget-desktop.png) | ![](docs/screenshots/after/budget-mobile.png) |
+| Tournament | ![](docs/screenshots/after/tournament-desktop.png) | ![](docs/screenshots/after/tournament-mobile.png) |
+| Handoffs | ![](docs/screenshots/after/handoffs-desktop.png) | ![](docs/screenshots/after/handoffs-mobile.png) |
+
+Light theme: [evidence graph](docs/screenshots/after/graph-desktop-light.png), [verdicts](docs/screenshots/after/verdicts-desktop-light.png). The earlier UI and an audit of what was wrong with it are in `docs/screenshots/before/`.
+
+### UI tests
+
+```bash
+pnpm test                                   # includes Testing Library component/view tests and a contrast check of the design tokens
+pnpm exec playwright install chromium       # once
+pnpm build && pnpm e2e                      # Playwright smoke (no console errors in any view, desktop + mobile), keyboard, theme, error-scrubbing, and axe WCAG 2.1 A/AA scans in both themes
+pnpm build && pnpm start -p 3111 &          # then: pnpm screenshots docs/screenshots/after [dark|light]
+```
 
 ## Honest limitations
 
