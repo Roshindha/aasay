@@ -13,7 +13,9 @@
     "test": "vitest run",
     "eval": "tsx scripts/eval.ts",
     "mcp": "tsx src/mcp/server.ts",
-    "refresh-popular": "tsx scripts/refresh-popular.ts"
+    "refresh-popular": "tsx scripts/refresh-popular.ts",
+    "screenshots": "tsx e2e/screenshots.ts",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.32.2",

@@ -34,7 +34,7 @@ export function ErrorState({ title = "Something went wrong", message, onRetry }:
   return (
     <div role="alert" data-testid="error-state" className="flex flex-col items-start gap-2 rounded-lg border border-confirmed/60 bg-confirmed-bg p-4 text-confirmed">
       <div className="flex items-center gap-2 text-sm font-semibold"><Alert width={16} height={16} />{title}</div>
-      <p className="m-0 max-w-prose break-words text-sm">{redactSecrets(message)}</p>
+      <p className="max-w-prose break-words text-sm">{redactSecrets(message)}</p>
       {onRetry && <button type="button" onClick={onRetry} className="h-7 rounded border border-current px-2 text-xs font-medium hover:bg-surface/30">Try again</button>}
     </div>
   );
