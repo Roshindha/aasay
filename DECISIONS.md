@@ -1,0 +1,25 @@
+# Decisions
+
+Every default chosen or changed while building from PLAN.md. Numbers match the plan's open questions.
+
+| # | Question | Decision |
+|---|----------|----------|
+| 1 | Location | Built in `~/assay-app`. The empty file `~/assay` was left untouched. |
+| 2 | Existing prior project | Built from scratch from the spec; nothing forked. The former project name is not used anywhere in the repo (see item F1). |
+| 3 | OpenAI usage | All LLM calls go through the `LlmClient` interface (`src/core/llm.ts`). Default is a deterministic heuristic client; the OpenAI client is used only if `OPENAI_API_KEY` is set and live mode is requested. Model from `ASSAY_MODEL` (default `gpt-4.1-mini`). Tests/build never use the network. |
+| 4 | Seeded benchmark | Self-authored demo repo in `fixtures/seeded-demo` with `fixtures/answer-key.json`. |
+| 5 | Top-500 lists | Curated approximate snapshots `fixtures/popular-npm.json` / `popular-pypi.json` (not verified top-500). `scripts/refresh-popular.ts` refreshes them. Marked as snapshots in README and UI. |
+| 6 | Manifests | As in the plan. See stage 3 notes below. |
+| 7 | Typosquat | Damerau-Levenshtein (OSA) <= 2, only when name not in list, names < 4 chars skipped, scoped names compared on full name. Nonexistent -> confirmed; existing lookalike -> likely. |
+| 8 | Live scan | GitHub API (optional `GITHUB_TOKEN`), capped by file count/size. |
+| 9 | pnpm | pnpm 8.9.2 works with Next 16.4.6 / React 19.3; no change. |
+| 10 | Git | `git init`, one commit per stage, no remote. |
+| 11 | Auth | Local only, no auth. |
+
+## Additional decisions
+
+- **F1 Forbidden name.** `PLAN.md` (the user-supplied spec) contains the former name and the plan's layout used a directory name derived from it. The detector modules live in `src/lanes/` instead of `src/scouts/`. `PLAN.md` itself is the only file excluded from the forbidden-name check; it is left unedited because it is the user's spec.
+- **F2 Versions.** Pinned `typescript@5` (not 7), `eslint@9`, `vitest@3` for compatibility with `eslint-config-next@16`; `@types/node@22`. `diff@8`.
+- **F3 Registry 404 semantics.** A 404 for a scoped package, or any lookup when a custom registry is configured (`.npmrc` registry / `.npmrc` scope registry, `pip.conf`/`--index-url`/`[[tool.poetry.source]]`), is `likely`, not `confirmed`.
+- **F4 Patch application.** Gate uses `git apply` in a temp dir (fallback `patch -p1`); diffs are generated with the `diff` package.
+- **F5 Tests of MCP.** The stdio test spawns the server through `tsx` and talks to it with the SDK client.

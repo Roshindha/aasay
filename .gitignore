@@ -1,0 +1,8 @@
+node_modules
+.next
+next-env.d.ts
+*.tsbuildinfo
+.assay-cache
+.env*
+!.env.example
+coverage
