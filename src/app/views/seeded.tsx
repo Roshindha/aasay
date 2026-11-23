@@ -53,7 +53,7 @@ export function SeededView() {
 
           <div className="grid gap-6 lg:grid-cols-2">
             <section aria-label="Answer key coverage" className="rounded-lg border border-line bg-surface p-4">
-              <h3 className="mb-3 text-sm font-semibold">Answer-key coverage</h3>
+              <h2 className="mb-3 text-sm font-semibold">Answer-key coverage</h2>
               <ul className="flex list-none flex-wrap gap-2 p-0">
                 {[...ev.found.map((id) => ({ id, ok: true })), ...ev.missed.map((id) => ({ id, ok: false }))].sort((a, b) => a.id.localeCompare(b.id)).map(({ id, ok }) => (
                   <li key={id} className={`num inline-flex h-6 items-center gap-1 rounded px-2 font-mono text-xs ${ok ? "bg-pass-bg text-pass" : "bg-confirmed-bg text-confirmed"}`}>
@@ -66,7 +66,7 @@ export function SeededView() {
               )}
             </section>
             <section aria-label="Findings by lane" className="rounded-lg border border-line bg-surface p-4">
-              <h3 className="mb-3 text-sm font-semibold">Findings by lane</h3>
+              <h2 className="mb-3 text-sm font-semibold">Findings by lane</h2>
               <ul className="list-none space-y-2 p-0">
                 {LANES.map((l) => {
                   const n = d.summary.byLane[l] ?? 0;

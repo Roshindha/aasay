@@ -117,7 +117,7 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
         <div className="space-y-4">
           {COLUMNS.filter((k) => graph.nodes.some((n) => n.kind === k)).map((k) => (
             <section key={k} aria-label={KIND_TEXT[k].plural}>
-              <h3 className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">{KIND_TEXT[k].plural}</h3>
+              <h2 className="mb-1 text-[11px] font-semibold uppercase tracking-wider text-muted">{KIND_TEXT[k].plural}</h2>
               <ul className="list-none space-y-1 p-0">
                 {graph.nodes.filter((n) => n.kind === k).map((n) => {
                   const { text, label } = labelOf(n);

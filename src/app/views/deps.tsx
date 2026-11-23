@@ -41,7 +41,7 @@ export function DepsPanel({ d }: { d: ScanView["dependencies"] }) {
       )}
 
       <section aria-label="Issues">
-        <h3 className="mb-2 text-sm font-semibold">Issues</h3>
+        <h2 className="mb-2 text-sm font-semibold">Issues</h2>
         {d.issues.length === 0 ? (
           <EmptyState title="No dependency issues">Every third-party import is declared in a manifest or lockfile.</EmptyState>
         ) : (
@@ -70,7 +70,7 @@ export function DepsPanel({ d }: { d: ScanView["dependencies"] }) {
 
       <div className="grid gap-6 md:grid-cols-2">
         <section aria-label="Imports by class" className="rounded-lg border border-line bg-surface p-4">
-          <h3 className="mb-3 text-sm font-semibold">Imports by class</h3>
+          <h2 className="mb-3 text-sm font-semibold">Imports by class</h2>
           <ul className="list-none space-y-2 p-0">
             {classes.map(([k, n]) => (
               <li key={k} className="grid grid-cols-[110px_1fr_28px] items-center gap-3 text-xs">
@@ -82,7 +82,7 @@ export function DepsPanel({ d }: { d: ScanView["dependencies"] }) {
           </ul>
         </section>
         <section aria-label="Manifests read" className="rounded-lg border border-line bg-surface p-4">
-          <h3 className="mb-3 text-sm font-semibold">Manifests read</h3>
+          <h2 className="mb-3 text-sm font-semibold">Manifests read</h2>
           {d.manifests.length ? <ul className="list-none space-y-1 p-0 font-mono text-xs">{d.manifests.map((m) => <li key={m} className="break-all">{m}</li>)}</ul> : <p className="text-xs text-muted">No manifests or lockfiles found.</p>}
         </section>
       </div>

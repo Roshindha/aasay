@@ -19,7 +19,7 @@ export function FindingCard({ f, onFix, onHandoff }: { f: Finding; onFix?: () =>
         {(f.lanes.length ? f.lanes : [f.lane]).map((l) => <LaneTag key={l} lane={l} />)}
         <span className="num ml-auto font-mono text-xs text-muted" data-testid="finding-location"><span className="sr-only">Location: </span>{f.file}:{f.line}</span>
       </div>
-      <h3 className="mt-2 text-sm font-semibold"><Inline text={f.title} /></h3>
+      <h2 className="mt-2 text-sm font-semibold"><Inline text={f.title} /></h2>
       <p className="mt-0.5 text-sm text-muted"><Inline text={f.detail} /></p>
       {f.evidence.length > 0 && (
         <div className="mt-3">

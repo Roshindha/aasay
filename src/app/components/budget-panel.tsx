@@ -8,7 +8,7 @@ export function BudgetPanel({ telemetry, llm }: { telemetry: Telemetry; llm?: st
   return (
     <section aria-label="Context budget" className="rounded-lg border border-line bg-surface">
       <header className="flex flex-wrap items-baseline justify-between gap-2 border-b border-line px-4 py-3">
-        <h3 className="text-sm font-semibold">Context budget</h3>
+        <h2 className="text-sm font-semibold">Context budget</h2>
         <p className="num text-xs text-muted">
           <span data-testid="budget-total" className="text-sm font-semibold text-fg">≈ {telemetry.totalEstTokens.toLocaleString("en-US")}</span> tokens · {files.length} files (chars ÷ 4){llm ? ` · LLM: ${llm}` : ""}
         </p>
