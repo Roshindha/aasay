@@ -25,14 +25,43 @@ const EDGE_STYLE: Record<Edge["kind"], { dash?: string; width: number; color: st
   "missing-from": { width: 2, color: "var(--confirmed-solid)", dash: "7 4" },
 };
 
-export const NODE_W = 256, NODE_H = 30, ROW_GAP = 10, COL_GAP = 40, PAD = 12, HEAD = 22;
+/** Column widths by node kind: findings carry the longest labels. */
+export const COL_W: Record<Kind, number> = { finding: 300, file: 190, dependency: 250, manifest: 170 };
+export const NODE_H = 40, ROW_GAP = 10, COL_GAP = 36, PAD = 12, HEAD = 22, LINE_PX = 6.3, MAX_LINES = 2;
 
 export function layoutGraph(g: EvidenceGraph) {
-  const pos = new Map<string, { x: number; y: number }>();
+  const pos = new Map<string, { x: number; y: number; w: number }>();
   const used = COLUMNS.filter((k) => g.nodes.some((n) => n.kind === k));
-  used.forEach((k, ci) => g.nodes.filter((n) => n.kind === k).forEach((n, ri) => pos.set(n.id, { x: PAD + ci * (NODE_W + COL_GAP), y: PAD + HEAD + ri * (NODE_H + ROW_GAP) })));
+  let x = PAD;
+  const colX: Partial<Record<Kind, number>> = {};
+  for (const k of used) {
+    colX[k] = x;
+    g.nodes.filter((n) => n.kind === k).forEach((n, ri) => pos.set(n.id, { x: x!, y: PAD + HEAD + ri * (NODE_H + ROW_GAP), w: COL_W[k] }));
+    x += COL_W[k] + COL_GAP;
+  }
   const rows = Math.max(1, ...used.map((k) => g.nodes.filter((n) => n.kind === k).length));
-  return { pos, columns: used, width: PAD * 2 + used.length * NODE_W + Math.max(0, used.length - 1) * COL_GAP, height: PAD * 2 + HEAD + rows * (NODE_H + ROW_GAP) };
+  return { pos, colX, columns: used, width: x - COL_GAP + PAD, height: PAD * 2 + HEAD + rows * (NODE_H + ROW_GAP) };
+}
+
+/**
+ * Greedy word wrap into at most `maxLines` lines of `maxChars`. Over-long words are hard-broken.
+ * Only text beyond the last line is dropped, and then the last line ends with an ellipsis.
+ */
+export function wrapLabel(text: string, maxChars: number, maxLines = MAX_LINES): string[] {
+  const words = text.split(/\s+/).filter(Boolean).flatMap((w) => (w.length > maxChars ? w.match(new RegExp(`.{1,${maxChars}}`, "g")) ?? [w] : [w]));
+  const lines: string[] = [];
+  let cur = "";
+  for (const w of words) {
+    if (!cur) cur = w;
+    else if ((cur + " " + w).length <= maxChars) cur += " " + w;
+    else { lines.push(cur); cur = w; }
+  }
+  if (cur) lines.push(cur);
+  if (lines.length <= maxLines) return lines;
+  const kept = lines.slice(0, maxLines);
+  const last = kept[maxLines - 1]!;
+  kept[maxLines - 1] = (last.length >= maxChars ? last.slice(0, maxChars - 1) : last) + "…";
+  return kept;
 }
 
 const labelOf = (n: Node): { text: string; label?: Finding["label"] } => {
@@ -68,7 +97,7 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
     if (!a || !b) return null;
     const ay = a.y + NODE_H / 2, by = b.y + NODE_H / 2;
     if (a.x === b.x) { const x = a.x - 6; return `M${a.x},${ay} C${x - 24},${ay} ${x - 24},${by} ${b.x},${by}`; }
-    const [x1, x2] = a.x < b.x ? [a.x + NODE_W, b.x] : [a.x, b.x + NODE_W];
+    const [x1, x2] = a.x < b.x ? [a.x + a.w, b.x] : [a.x, b.x + b.w];
     const mx = (x1 + x2) / 2;
     return `M${x1},${ay} C${mx},${ay} ${mx},${by} ${x2},${by}`;
   };
@@ -86,7 +115,7 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
       <div className={graphCls} data-testid="graph-canvas">
         <div className="overflow-x-auto rounded-lg border border-line bg-surface">
           <svg role="group" aria-label="Evidence graph. Select a node to inspect it." viewBox={`0 0 ${L.width} ${L.height}`} width="100%" style={{ minWidth: Math.min(L.width, 720), height: "auto" }}>
-            {L.columns.map((k, i) => <text key={k} x={PAD + i * (NODE_W + COL_GAP)} y={PAD + 8} fontSize="10" fontWeight="600" letterSpacing="0.08em" fill="var(--text-muted)">{KIND_TEXT[k].plural.toUpperCase()}</text>)}
+            {L.columns.map((k) => <text key={k} x={L.colX[k]} y={PAD + 8} fontSize="10" fontWeight="600" letterSpacing="0.08em" fill="var(--text-muted)">{KIND_TEXT[k].plural.toUpperCase()}</text>)}
             {graph.edges.map((e, i) => {
               const d = path(e); if (!d) return null;
               const st = EDGE_STYLE[e.kind];
@@ -96,15 +125,16 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
             {graph.nodes.map((n) => {
               const p = L.pos.get(n.id); if (!p) return null;
               const { text, label } = labelOf(n);
+              const lines = wrapLabel(text, Math.floor((p.w - 24) / LINE_PX));
               const isSel = n.id === selected, dim = !!selected && !connected.has(n.id);
               return (
                 <g key={n.id} role="button" tabIndex={0} aria-pressed={isSel} aria-label={`${KIND_TEXT[n.kind].tag} ${text}`} data-testid="graph-node"
                   onClick={() => pick(n.id)} onKeyDown={onKey(n.id)} opacity={dim ? 0.35 : 1} style={{ cursor: "pointer" }}>
-                  <clipPath id={`clip-${n.id.replace(/[^\w]/g, "_")}`}><rect x={p.x + 72} y={p.y} width={NODE_W - 80} height={NODE_H} /></clipPath>
-                  <rect x={p.x} y={p.y} width={NODE_W} height={NODE_H} rx={5} fill="var(--surface-2)" stroke={isSel ? "var(--focus)" : "var(--border)"} strokeWidth={isSel ? 2 : 1} />
+                  <rect x={p.x} y={p.y} width={p.w} height={NODE_H} rx={5} fill="var(--surface-2)" stroke={isSel ? "var(--focus)" : "var(--border)"} strokeWidth={isSel ? 2 : 1} />
                   {label && <rect x={p.x} y={p.y} width={4} height={NODE_H} rx={2} fill={STRIPE[label]} />}
-                  <text x={p.x + 12} y={p.y + 19} fontSize="9" fontWeight="700" fontFamily="var(--font-mono)" fill="var(--text-muted)">{`${KIND_TEXT[n.kind].tag} `}</text>
-                  <text x={p.x + 72} y={p.y + 19} fontSize="12" fill="var(--text)" clipPath={`url(#clip-${n.id.replace(/[^\w]/g, "_")})`}>{text}</text>
+                  <text x={p.x + 12} y={p.y + (lines.length === 1 ? NODE_H / 2 + 4 : 17)} fontSize="12" fill="var(--text)" data-testid="graph-node-text">
+                    {lines.map((ln, i) => <tspan key={i} x={p.x + 12} dy={i === 0 ? 0 : 15}>{i < lines.length - 1 ? ln + " " : ln}</tspan>)}
+                  </text>
                 </g>
               );
             })}

@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { afterEach, beforeAll, beforeEach, describe, expect, it, vi } from "vitest";
 import { Dashboard } from "@/app/dashboard";
 import { EnvStatus } from "@/app/shell";
+import { wrapLabel } from "@/app/components/evidence-graph";
 import { scanSeeded, scanView, tournamentFor, type ScanView } from "@/core/service";
 
 let seededView: ScanView;
@@ -195,6 +196,49 @@ describe("Evidence graph view", () => {
     await screen.findAllByTestId("graph-node");
     const list = screen.getByTestId("graph-list");
     expect(within(list).getAllByRole("button").length).toBe(seededView.graph.nodes.length);
+  });
+});
+
+describe("Graph node labels", () => {
+  const plain = (label: string) => label.replace(/ \[(confirmed|likely|speculative)\]$/, "").replace(/`/g, "");
+
+  it("shows the full label text on every node in the seeded graph (wrapped, not truncated)", async () => {
+    mockFetch(okSeeded);
+    go("graph");
+    render(<Dashboard />);
+    const nodes = await screen.findAllByTestId("graph-node");
+    expect(nodes).toHaveLength(seededView.graph.nodes.length);
+    for (const n of seededView.graph.nodes) {
+      const full = plain(n.label);
+      const el = nodes.find((x) => x.getAttribute("aria-label")!.endsWith(` ${full}`));
+      expect(el, `node for "${full}"`).toBeDefined();
+      const shown = (within(el!).getByTestId("graph-node-text").textContent ?? "").replace(/\s+/g, " ").trim();
+      expect(shown).toBe(full);
+      expect(shown).not.toContain("…");
+    }
+  });
+
+  it("keeps the full text in the inspector", async () => {
+    mockFetch(okSeeded);
+    go("graph");
+    render(<Dashboard />);
+    const nodes = await screen.findAllByTestId("graph-node");
+    const long = seededView.graph.nodes.filter((n) => n.kind === "finding").sort((a, b) => b.label.length - a.label.length)[0]!;
+    await userEvent.click(nodes.find((x) => x.getAttribute("aria-label")!.endsWith(` ${plain(long.label)}`))!);
+    expect(screen.getByTestId("graph-inspector").textContent).toContain(plain(long.label).replace(/`/g, ""));
+  });
+
+  it("wrapLabel wraps to two lines and only truncates beyond that", () => {
+    expect(wrapLabel("short label", 30)).toEqual(["short label"]);
+    const long = "Phantom dependency: express-validator-pro does not exist on npm";
+    expect(wrapLabel(long, 70)).toEqual([long]);
+    expect(wrapLabel(long, 40)).toEqual(["Phantom dependency:", "express-validator-pro does not exist on…"]);
+    const two = wrapLabel("aaa bbb ccc ddd eee fff", 8);
+    expect(two).toEqual(["aaa bbb", "ccc ddd…"]);
+    const hard = wrapLabel("x".repeat(25), 10);
+    expect(hard).toHaveLength(2);
+    expect(hard[1]!.endsWith("…")).toBe(true);
+    expect(wrapLabel("one two three four", 9)).toHaveLength(2);
   });
 });
 
