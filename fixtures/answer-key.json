@@ -1,0 +1,16 @@
+{
+  "lineTolerance": 1,
+  "bugs": [
+    { "id": "H1", "lane": "hallucination", "file": "src/server.ts", "line": 4, "critical": true, "description": "Imports formatCurrency, which ./utils does not export (it exports formatMoney)." },
+    { "id": "H2", "lane": "hallucination", "file": "src/cache.ts", "line": 10, "critical": false, "description": "Promise.allResolved does not exist." },
+    { "id": "H3", "lane": "hallucination", "file": "app/billing.py", "line": 7, "critical": false, "description": "json.parse does not exist in Python's json module (json.loads)." },
+    { "id": "D1", "lane": "spec-drift", "file": "src/pricing.ts", "line": 3, "critical": false, "description": "PAGE_SIZE is 50 but the spec says 20." },
+    { "id": "D2", "lane": "spec-drift", "file": "src/pricing.ts", "line": 5, "critical": false, "description": "applyDiscount takes a third `floor` parameter the spec does not define." },
+    { "id": "D3", "lane": "spec-drift", "file": "app/config.py", "line": 3, "critical": false, "description": "MAX_RETRIES is 5 but the spec says 3." },
+    { "id": "T1", "lane": "test-theater", "file": "src/pricing.test.ts", "line": 9, "critical": false, "description": "Test 'calculates tax' has no assertions." },
+    { "id": "T2", "lane": "test-theater", "file": "src/pricing.test.ts", "line": 14, "critical": false, "description": "expect(true).toBe(true) is a tautology." },
+    { "id": "T3", "lane": "test-theater", "file": "app/test_billing.py", "line": 9, "critical": false, "description": "assert True is a tautology." },
+    { "id": "P1", "lane": "phantom-dependency", "file": "src/server.ts", "line": 3, "critical": true, "description": "express-validator-pro is imported, undeclared, and does not exist on npm." },
+    { "id": "P2", "lane": "phantom-dependency", "file": "app/billing.py", "line": 3, "critical": true, "description": "fastjsonvalidate is imported, undeclared, and does not exist on PyPI." }
+  ]
+}
