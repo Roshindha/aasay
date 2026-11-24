@@ -8,7 +8,7 @@ import { chromium } from "@playwright/test";
 const out = process.argv[2] ?? "docs/screenshots/after";
 const theme = process.argv[3] ?? "dark";
 const base = process.env.ASSAY_URL ?? "http://localhost:3111";
-const VIEWS = ["seeded", "live", "verdicts", "graph", "deps", "budget", "tournament", "handoffs"];
+const VIEWS = ["seeded", "live", "verdicts", "graph", "authorship", "deps", "budget", "tournament", "handoffs"];
 
 const browser = await chromium.launch();
 for (const [name, width, height] of [["desktop", 1440, 900], ["mobile", 390, 844]] as const) {
@@ -18,7 +18,7 @@ for (const [name, width, height] of [["desktop", 1440, 900], ["mobile", 390, 844
   await page.getByTestId("stat-tile").first().waitFor();
   for (const v of VIEWS) {
     await page.evaluate((id) => { window.location.hash = `/${id}`; }, v);
-    await page.waitForTimeout(v === "tournament" || v === "handoffs" ? 1800 : 300);
+    await page.waitForTimeout(v === "tournament" || v === "handoffs" || v === "authorship" ? 1800 : 300);
     await page.screenshot({ path: `${out}/${v}-${name}${theme === "light" ? "-light" : ""}.png`, fullPage: true });
   }
   await ctx.close();

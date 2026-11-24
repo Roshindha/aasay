@@ -1,7 +1,7 @@
 import { expect, test, type ConsoleMessage, type Page } from "@playwright/test";
 
 const VIEWS: Array<[string, string]> = [
-  ["seeded", "Seeded run"], ["live", "Live scan"], ["verdicts", "Verdicts"], ["graph", "Evidence graph"],
+  ["seeded", "Seeded run"], ["live", "Live scan"], ["verdicts", "Verdicts"], ["graph", "Evidence graph"], ["authorship", "Authorship & disclosure"],
   ["deps", "Dependencies"], ["budget", "Context budget"], ["tournament", "Patch tournament"], ["handoffs", "Handoff"],
 ];
 
@@ -29,6 +29,7 @@ for (const [width, height, name] of [[1440, 900, "desktop"], [390, 844, "mobile"
         if (id === "graph") await expect(page.getByTestId(width < 768 ? "graph-list" : "graph-canvas")).toBeVisible();
         if (id === "tournament") await expect(page.getByTestId("candidate").first()).toBeVisible({ timeout: 15_000 });
         if (id === "handoffs") await expect(page.getByRole("button", { name: /Copy Handoff brief/ })).toBeVisible({ timeout: 15_000 });
+        if (id === "authorship") await expect(page.getByTestId("signal").first()).toBeVisible({ timeout: 15_000 });
         if (id === "live") await expect(page.getByTestId("empty-state")).toBeVisible();
         const overflow = await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth);
         expect(overflow, `horizontal overflow on ${id}`).toBeLessThanOrEqual(0);
@@ -86,4 +87,13 @@ test("dependencies reflow into cards at 390px with no horizontal scroll; table o
   await expect(d.getByRole("table")).toBeVisible();
   await expect(d.getByTestId("dep-cards")).toBeHidden();
   await desktop.close();
+});
+
+test("authorship API: report for a fixture, and a request to hide signals is refused", async ({ request }) => {
+  const ok = await request.get("/api/authorship?case=claims-handwritten-has-claude");
+  expect(ok.status()).toBe(200);
+  expect((await ok.json()).report.status).toBe("mismatch");
+  const refused = await request.get("/api/authorship?case=mixed&request=" + encodeURIComponent("remove the Co-Authored-By trailers from history"));
+  expect(refused.status()).toBe(422);
+  expect((await refused.json()).error).toMatch(/will not remove, hide, rewrite or obfuscate/);
 });

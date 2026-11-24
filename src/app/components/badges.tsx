@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import type { DisclosureStatus, Overall, Strength } from "@/authorship/types";
 import type { Label, Severity } from "@/core/types";
 import { CheckCircle, DashedCircle, HalfCircle, SeverityMeter, XCircle } from "./icons";
 
@@ -44,4 +45,34 @@ export function StatusPill({ status, children }: { status: "pass" | "fail" | "ne
 
 export function LaneTag({ lane }: { lane: string }) {
   return <span className="inline-flex h-5 items-center rounded border border-line px-1.5 font-mono text-xs text-muted">{lane}</span>;
+}
+
+
+const STRENGTH: Record<Strength, { text: string; cls: string; Icon: typeof CheckCircle }> = {
+  strong: { text: "Strong", cls: "bg-confirmed-bg text-confirmed", Icon: CheckCircle },
+  moderate: { text: "Moderate", cls: "bg-likely-bg text-likely", Icon: HalfCircle },
+  speculative: { text: "Speculative", cls: "bg-speculative-bg text-speculative", Icon: DashedCircle },
+};
+
+/** Signal strength: icon shape plus text. */
+export function StrengthBadge({ strength }: { strength: Strength }) {
+  const { text, cls, Icon } = STRENGTH[strength];
+  return <span data-testid="strength-badge" data-strength={strength} className={`inline-flex h-5 items-center gap-1 rounded px-1.5 text-xs font-medium ${cls}`}><Icon width={12} height={12} />{text}</span>;
+}
+
+const DISCLOSURE: Record<DisclosureStatus, { text: string; status: "pass" | "fail" | "neutral" }> = {
+  disclosed: { text: "Disclosed", status: "pass" }, undisclosed: { text: "Undisclosed", status: "fail" },
+  mismatch: { text: "Mismatch", status: "fail" }, "none-found": { text: "None found", status: "neutral" },
+};
+export function DisclosureBadge({ status }: { status: DisclosureStatus }) {
+  const { text, status: tone } = DISCLOSURE[status];
+  return <span data-testid="disclosure-status" data-status={status}><StatusPill status={tone}>{text}</StatusPill></span>;
+}
+
+const OVERALL: Record<Overall, { text: string; status: "pass" | "fail" | "neutral" }> = {
+  clear: { text: "Clear", status: "pass" }, "needs-review": { text: "Needs review", status: "neutral" }, "action-needed": { text: "Action needed", status: "fail" },
+};
+export function OverallBadge({ overall }: { overall: Overall }) {
+  const { text, status } = OVERALL[overall];
+  return <span data-testid="overall-result" data-overall={overall}><StatusPill status={status}>{text}</StatusPill></span>;
 }

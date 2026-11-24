@@ -7,7 +7,7 @@ const GENERIC_TOOL = /AGENTS\.md convention/;
 export const REPORT_CAVEATS = [
   "Assay reports signals, not verdicts. It never says who or what wrote the code.",
   "Strong signals show an AI tool was configured or named in this repository, not how much of the code it produced or whether the owner reviewed it.",
-  "No strong signals does not mean the code was written by a person. Tools can be used without leaving a trace, and traces can be removed.",
+  "Finding no strong signals does not mean the code was written by a person. Tools can be used without leaving a trace, and traces can be removed.",
   "Style-based detection is unreliable: speculative signals are shown for completeness and never change the overall result.",
 ];
 
