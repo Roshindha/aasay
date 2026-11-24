@@ -1,4 +1,5 @@
 import { allowlistedFetch, type FetchLike } from "@/core/allowlist";
+import type { CommitInfo } from "@/authorship/types";
 import type { SourceFile } from "@/core/types";
 
 export interface GithubRef { owner: string; repo: string; pull?: number }
@@ -10,20 +11,90 @@ export function parseGithubUrl(url: string): GithubRef {
 }
 
 export interface FetchOptions { token?: string; fetchImpl?: FetchLike; maxFiles?: number; maxBytes?: number }
-export interface FetchedRepo { files: SourceFile[]; ref: string; skipped: string[]; truncated: boolean; changed?: string[]; /** Every file path in the fetched tree (not just the downloaded ones) */ paths: string[]; commits?: import("@/authorship/types").CommitInfo[] }
+export interface FetchedRepo { files: SourceFile[]; ref: string; skipped: string[]; truncated: boolean; changed?: string[]; /** Every file path in the fetched tree (not just the downloaded ones) */ paths: string[]; commits?: CommitInfo[] }
 
 const REVIEWABLE = /\.(m|c)?(t|j)sx?$|\.py$/;
 const SUPPORT = /(^|\/)(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|requirements[^/]*\.txt|pyproject\.toml|Pipfile|Pipfile\.lock|poetry\.lock|tsconfig[^/]*\.json|jsconfig\.json|\.npmrc|readme[^/]*\.(md|rst|txt)|docs\/[^/]+\.(md|mdx)|(spec|specs|requirements|design)[^/]*\.md)$/i;
 
-export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Promise<FetchedRepo> {
-  const maxFiles = opts.maxFiles ?? 80, maxBytes = opts.maxBytes ?? 150_000;
+/** Turns a failed GitHub response into a message that never contains credentials. */
+export function githubError(res: Response, path: string, hadToken: boolean): Error {
+  const where = path.split("?")[0];
+  if ((res.status === 403 || res.status === 429) && res.headers.get("x-ratelimit-remaining") === "0") {
+    const reset = Number(res.headers.get("x-ratelimit-reset"));
+    const when = reset ? ` It resets at ${new Date(reset * 1000).toISOString()}.` : "";
+    return new Error(`GitHub rate limit reached.${when} ${hadToken ? "The configured token's limit is used up." : "Set GITHUB_TOKEN on the server for a higher limit."}`);
+  }
+  if (res.status === 401) return new Error("GitHub rejected the credentials (401). Check the GITHUB_TOKEN configured on the server.");
+  if (res.status === 404) return new Error(`GitHub API 404 for ${where}. The repository, pull request or ref may not exist, or it may be private${hadToken ? " and the token lacks access" : " (set GITHUB_TOKEN for private repositories)"}.`);
+  return new Error(`GitHub API ${res.status} for ${where}`);
+}
+
+function githubClient(opts: FetchOptions) {
   const headers: Record<string, string> = { accept: "application/vnd.github+json", "user-agent": "assay-app", "x-github-api-version": "2022-11-28" };
   if (opts.token) headers.authorization = `Bearer ${opts.token}`; // only ever sent to api.github.com (allowlistedFetch)
-  const api = async (path: string, accept?: string) => {
+  return async (path: string, accept?: string) => {
     const res = await allowlistedFetch(`https://api.github.com${path}`, { headers: accept ? { ...headers, accept } : headers }, opts.fetchImpl);
-    if (!res.ok) throw new Error(`GitHub API ${res.status} for ${path.split("?")[0]}`);
+    if (!res.ok) throw githubError(res, path, !!opts.token);
     return res;
   };
+}
+
+interface ApiCommit {
+  sha: string;
+  commit: { message: string; author?: { name?: string; email?: string; date?: string }; committer?: { name?: string; email?: string; date?: string } };
+  author?: { login?: string; type?: string } | null;
+  committer?: { login?: string } | null;
+  stats?: { additions?: number; deletions?: number };
+}
+
+export function mapApiCommit(c: ApiCommit): CommitInfo {
+  const login = c.author?.login;
+  const name = c.commit.author?.name ?? "";
+  return {
+    sha: c.sha, message: c.commit.message,
+    // the account login is kept in the name so AI-tool bot accounts (e.g. "x[bot]") can be recognised
+    authorName: login && !name.includes(login) ? `${name} (${login})` : name,
+    authorEmail: c.commit.author?.email ?? "",
+    committerName: c.commit.committer?.name, committerEmail: c.commit.committer?.email,
+    date: c.commit.author?.date ?? c.commit.committer?.date ?? "",
+    ...(c.stats ? { additions: c.stats.additions ?? 0, deletions: c.stats.deletions ?? 0 } : {}),
+  };
+}
+
+export interface CommitFetch { commits: CommitInfo[]; truncated: boolean; statsFor: number }
+
+/**
+ * Commit history for the authorship audit, via api.github.com only. A PR lists its own commits; a repo lists its default branch,
+ * newest first, up to `maxCommits`. Line stats are not in list responses, so when the list is complete only the oldest (root)
+ * commit is fetched in detail (one extra request) to support the "very large initial commit" pattern.
+ */
+export async function fetchCommits(ref: GithubRef, opts: FetchOptions & { maxCommits?: number } = {}): Promise<CommitFetch> {
+  const api = githubClient(opts);
+  const max = opts.maxCommits ?? 200;
+  const base = `/repos/${ref.owner}/${ref.repo}`;
+  const list = ref.pull ? `${base}/pulls/${ref.pull}/commits` : `${base}/commits`;
+  const commits: CommitInfo[] = [];
+  let truncated = false;
+  for (let page = 1; commits.length < max; page++) {
+    const batch = (await (await api(`${list}?per_page=100&page=${page}`)).json()) as ApiCommit[];
+    for (const c of batch) { if (commits.length < max) commits.push(mapApiCommit(c)); else truncated = true; }
+    if (batch.length < 100) break;
+    if (commits.length >= max) { truncated = true; break; }
+  }
+  let statsFor = 0;
+  if (!truncated && commits.length > 1) {
+    const oldest = ref.pull ? commits[0]! : commits[commits.length - 1]!;
+    try {
+      const d = (await (await api(`${base}/commits/${oldest.sha}`)).json()) as ApiCommit;
+      if (d.stats) { oldest.additions = d.stats.additions ?? 0; oldest.deletions = d.stats.deletions ?? 0; statsFor = 1; }
+    } catch { /* stats are optional */ }
+  }
+  return { commits, truncated, statsFor };
+}
+
+export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Promise<FetchedRepo> {
+  const maxFiles = opts.maxFiles ?? 80, maxBytes = opts.maxBytes ?? 150_000;
+  const api = githubClient(opts);
   const base = `/repos/${ref.owner}/${ref.repo}`;
   const skipped: string[] = [];
   let sha: string;

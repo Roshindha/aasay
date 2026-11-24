@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import path from "node:path";
 import type { FetchLike } from "./allowlist";
-import { fetchGithub, parseGithubUrl } from "@/github/fetch";
+import { fetchCommits, fetchGithub, parseGithubUrl } from "@/github/fetch";
 import { loadAnswerKey, runSeededEval } from "@/judge/eval";
 import { buildHandoff } from "@/patches/handoff";
 import { scorePatch } from "@/patches/score";
@@ -74,8 +74,14 @@ export async function scanGithub(url: string, opts: ScanOptions & { fetchImpl?: 
   const fetched = await fetchGithub(ref, { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl });
   if (!fetched.files.length) throw new Error("No reviewable files were fetched from that URL.");
   const reg = client(opts);
-  const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm(), repo: { paths: fetched.paths, commits: fetched.commits ?? [] } });
+  const ghOpts = { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl };
+  let history: Awaited<ReturnType<typeof fetchCommits>> | null = null, historyNote = "";
+  try { history = await fetchCommits(ref, ghOpts); }
+  catch (e) { historyNote = `commit history unavailable: ${(e as Error).message}`; } // the rest of the scan does not depend on it
+  const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm(), repo: { paths: fetched.paths, commits: history?.commits ?? [] } });
   const notes = [`ref ${fetched.ref.slice(0, 10)}`, `${fetched.files.length} files fetched`];
+  if (history) notes.push(`${history.commits.length} commits read${history.truncated ? " (capped)" : ""}${history.statsFor ? "" : ", no line stats"}`);
+  if (historyNote) notes.push(historyNote);
   if (fetched.truncated) notes.push("truncated by file cap");
   if (fetched.skipped.length) notes.push(`${fetched.skipped.length} skipped (size/cap)`);
   if (ref.pull) notes.push(`PR #${ref.pull}: ${fetched.changed?.length ?? 0} changed files; manifests included for context`);
