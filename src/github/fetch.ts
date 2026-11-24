@@ -11,18 +11,24 @@ export function parseGithubUrl(url: string): GithubRef {
 }
 
 export interface FetchOptions { token?: string; fetchImpl?: FetchLike; maxFiles?: number; maxBytes?: number }
-export interface FetchedRepo { files: SourceFile[]; ref: string; skipped: string[]; truncated: boolean; changed?: string[]; /** Every file path in the fetched tree (not just the downloaded ones) */ paths: string[]; commits?: CommitInfo[] }
+export interface FetchedRepo { files: SourceFile[]; /** Set when the file download stopped early because GitHub's request budget ran out */ rateLimited?: { resetAt: string | null; message: string }; ref: string; skipped: string[]; truncated: boolean; changed?: string[]; /** Every file path in the fetched tree (not just the downloaded ones) */ paths: string[]; commits?: CommitInfo[] }
 
 const REVIEWABLE = /\.(m|c)?(t|j)sx?$|\.py$/;
 const SUPPORT = /(^|\/)(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|requirements[^/]*\.txt|pyproject\.toml|Pipfile|Pipfile\.lock|poetry\.lock|tsconfig[^/]*\.json|jsconfig\.json|\.npmrc|readme[^/]*\.(md|rst|txt)|docs\/[^/]+\.(md|mdx)|(spec|specs|requirements|design)[^/]*\.md)$/i;
+
+/** Thrown when GitHub says the request budget is used up; callers can keep what they already fetched. */
+export class GithubRateLimitError extends Error {
+  constructor(message: string, public readonly resetAt: string | null) { super(message); this.name = "GithubRateLimitError"; }
+}
 
 /** Turns a failed GitHub response into a message that never contains credentials. */
 export function githubError(res: Response, path: string, hadToken: boolean): Error {
   const where = path.split("?")[0];
   if ((res.status === 403 || res.status === 429) && res.headers.get("x-ratelimit-remaining") === "0") {
     const reset = Number(res.headers.get("x-ratelimit-reset"));
-    const when = reset ? ` It resets at ${new Date(reset * 1000).toISOString()}.` : "";
-    return new Error(`GitHub rate limit reached.${when} ${hadToken ? "The configured token's limit is used up." : "Set GITHUB_TOKEN on the server for a higher limit."}`);
+    const resetAt = reset ? new Date(reset * 1000).toISOString() : null;
+    const when = resetAt ? ` It resets at ${resetAt}.` : "";
+    return new GithubRateLimitError(`GitHub rate limit reached.${when} ${hadToken ? "The configured token's limit is used up." : "Set GITHUB_TOKEN on the server for a higher limit."}`, resetAt);
   }
   if (res.status === 401) return new Error("GitHub rejected the credentials (401). Check the GITHUB_TOKEN configured on the server.");
   if (res.status === 404) return new Error(`GitHub API 404 for ${where}. The repository, pull request or ref may not exist, or it may be private${hadToken ? " and the token lacks access" : " (set GITHUB_TOKEN for private repositories)"}.`);
@@ -93,7 +99,8 @@ export async function fetchCommits(ref: GithubRef, opts: FetchOptions & { maxCom
 }
 
 export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Promise<FetchedRepo> {
-  const maxFiles = opts.maxFiles ?? 80, maxBytes = opts.maxBytes ?? 150_000;
+  // Unauthenticated GitHub allows 60 requests/hour and each file is one request, so the default has to leave room for the tree and history calls.
+  const maxFiles = opts.maxFiles ?? (opts.token ? 80 : 40), maxBytes = opts.maxBytes ?? 150_000;
   const api = githubClient(opts);
   const base = `/repos/${ref.owner}/${ref.repo}`;
   const skipped: string[] = [];
@@ -129,13 +136,21 @@ export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Prom
   const sizeOf = new Map(allPaths.map((p) => [p.path, p.size]));
   const files: SourceFile[] = [];
   let truncated = false;
+  let rateLimited: FetchedRepo["rateLimited"];
   for (const p of wanted) {
+    if (rateLimited) { skipped.push(`${p} (rate limit)`); continue; }
     if (files.length >= maxFiles) { truncated = true; skipped.push(`${p} (file cap ${maxFiles})`); continue; }
     if ((sizeOf.get(p) ?? 0) > maxBytes) { skipped.push(`${p} (> ${maxBytes} bytes)`); continue; }
-    const res = await api(`${base}/contents/${p.split("/").map(encodeURIComponent).join("/")}?ref=${sha}`, "application/vnd.github.raw+json");
-    const content = await res.text();
+    let content: string;
+    try {
+      const res = await api(`${base}/contents/${p.split("/").map(encodeURIComponent).join("/")}?ref=${sha}`, "application/vnd.github.raw+json");
+      content = await res.text();
+    } catch (e) {
+      if (e instanceof GithubRateLimitError && files.length > 0) { rateLimited = { resetAt: e.resetAt, message: e.message }; truncated = true; skipped.push(`${p} (rate limit)`); continue; }
+      throw e; // nothing fetched yet, or a different failure: surface it
+    }
     if (content.length > maxBytes) { skipped.push(`${p} (> ${maxBytes} chars)`); continue; }
     files.push({ path: p, content });
   }
-  return { files, ref: sha, skipped, truncated, changed, paths: allPaths.map((p) => p.path) };
+  return { files, ref: sha, skipped, truncated, changed, rateLimited, paths: allPaths.map((p) => p.path) };
 }

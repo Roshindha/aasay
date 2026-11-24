@@ -3,9 +3,7 @@ import { assertRequestAllowed, authorshipCase, authorshipOverview } from "@/auth
 
 export const dynamic = "force-dynamic";
 
-/** GET /api/authorship            -> fixture list + eval metrics
- *  GET /api/authorship?case=<id>  -> report + disclosure draft for one seeded fixture
- *  `request` (optional free text) is checked by the refusal policy first. */
+
 export async function GET(req: Request) {
   const url = new URL(req.url);
   try {

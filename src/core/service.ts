@@ -71,19 +71,21 @@ export async function scanLocal(dir: string, opts: ScanOptions = {}): Promise<Sc
 
 export async function scanGithub(url: string, opts: ScanOptions & { fetchImpl?: FetchLike } = {}): Promise<Scan> {
   const ref = parseGithubUrl(url);
-  const fetched = await fetchGithub(ref, { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl });
-  if (!fetched.files.length) throw new Error("No reviewable files were fetched from that URL.");
-  const reg = client(opts);
   const ghOpts = { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl };
+  // History first: it is a handful of requests and the authorship audit needs it; file downloads take whatever budget is left.
   let history: Awaited<ReturnType<typeof fetchCommits>> | null = null, historyNote = "";
   try { history = await fetchCommits(ref, ghOpts); }
   catch (e) { historyNote = `commit history unavailable: ${(e as Error).message}`; } // the rest of the scan does not depend on it
+  const fetched = await fetchGithub(ref, ghOpts);
+  if (!fetched.files.length) throw new Error("No reviewable files were fetched from that URL.");
+  const reg = client(opts);
   const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm(), repo: { paths: fetched.paths, commits: history?.commits ?? [] } });
   const notes = [`ref ${fetched.ref.slice(0, 10)}`, `${fetched.files.length} files fetched`];
   if (history) notes.push(`${history.commits.length} commits read${history.truncated ? " (capped)" : ""}${history.statsFor ? "" : ", no line stats"}`);
   if (historyNote) notes.push(historyNote);
-  if (fetched.truncated) notes.push("truncated by file cap");
-  if (fetched.skipped.length) notes.push(`${fetched.skipped.length} skipped (size/cap)`);
+  if (fetched.rateLimited) notes.push(`partial scan: ${fetched.rateLimited.message}`);
+  else if (fetched.truncated) notes.push("truncated by file cap");
+  if (fetched.skipped.length) notes.push(`${fetched.skipped.length} skipped (size/cap/rate limit)`);
   if (ref.pull) notes.push(`PR #${ref.pull}: ${fetched.changed?.length ?? 0} changed files; manifests included for context`);
   return putScan({ id: scanId(fetched.files, "github"), source: "github", label: url, files: fetched.files, review, offline: usedNoNetwork(reg), notes });
 }
