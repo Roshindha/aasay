@@ -63,8 +63,3 @@ A scan reads a bundled demo, a local folder or a GitHub repo or pull request. Th
 - Finding no AI signals is not proof a human wrote the code.
 - The popular-package lists used for typosquat hints are hand-made snapshots.
 - Unauthenticated GitHub allows 60 requests an hour, so large live scans need `GITHUB_TOKEN`.
-
-## How this was built
-
-This project was built with Claude Code, an AI coding assistant, working from my specifications in stages that I reviewed.
-
