@@ -1,0 +1,76 @@
+{
+ "id": "claims-handwritten-has-claude",
+ "description": "README says 100% hand-written but CLAUDE.md is committed.",
+ "humanWritten": false,
+ "paths": [
+  "CLAUDE.md",
+  "README.md",
+  "src/app.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n\n100% hand-written. No AI was used.\n"
+  },
+  {
+   "path": "src/app.py",
+   "content": "def add(a, b):\n    return a + b\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "c8869dd103da9c63a84fd6ad5b98d1179d42898d",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "1f745dba7536d3b80a35cc126c0acb8f2c6ce48f",
+   "message": "fix off-by-one",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "e6b9ac3ba46ac51f640fbbd136067ba53d98c7db",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "47c7b6225e7afec274033e065213a3869c7641ea",
+   "message": "tidy readme",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-10T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "3a5a0319a041059cb0544b426f4868860a5b794e",
+   "message": "handle empty input",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "290cd8ef464dbf333e3abfaeb3f025a0895989ea",
+   "message": "bump version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-16T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

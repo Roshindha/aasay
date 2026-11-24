@@ -1,0 +1,138 @@
+{
+ "id": "human-fp-history",
+ "description": "Human-written project imported in one commit, with templated conventional-commit messages, a dependency bot and a human co-author.",
+ "humanWritten": true,
+ "paths": [
+  "README.md",
+  "src/app.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n"
+  },
+  {
+   "path": "src/app.py",
+   "content": "def add(a, b):\n    return a + b\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "dfb339a429f8c285c913311fe51f27b64a6eee52",
+   "message": "chore: import project from old repository\n\n- move sources\n- keep history notes",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 6200,
+   "deletions": 0
+  },
+  {
+   "sha": "13971324711fae8276a08491715127d9c09b7016",
+   "message": "feat(core): change 1\n\n- adjust handler 1\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-06T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "4d75842e8e9184209d387cc99bf8f24f1f05b13d",
+   "message": "feat(core): change 2\n\n- adjust handler 2\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-11T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "d614cba79206217aac37df477394c1720ad181e0",
+   "message": "feat(core): change 3\n\n- adjust handler 3\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-16T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "ad1109187d899631ede567bbe7e8737f862e8b14",
+   "message": "feat(core): change 4\n\n- adjust handler 4\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-21T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "ecde7d9db46818a4c792cf80c84cdaaa28b0326f",
+   "message": "feat(core): change 5\n\n- adjust handler 5\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-26T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "6feff02498e0ea1a73c1d583d61d6aae5b63becf",
+   "message": "feat(core): change 6\n\n- adjust handler 6\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "63a1e8b7e0b3af2c6f504e19272e10553630e37d",
+   "message": "feat(core): change 7\n\n- adjust handler 7\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-02-05T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "280fce7bd29ce64b6bc98dff8c3d478d70dd565d",
+   "message": "feat(core): change 8\n\n- adjust handler 8\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-02-10T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "fe86daa29ef7963ecbb21d73afc94b74b27642f7",
+   "message": "feat(core): change 9\n\n- adjust handler 9\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-02-15T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "85fa229ba2ebac1cedb9ab220b8a2adf3beab259",
+   "message": "feat(core): change 10\n\n- adjust handler 10\n- update tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-02-20T10:00:00.000Z",
+   "additions": 30,
+   "deletions": 4
+  },
+  {
+   "sha": "70097003f97ed1023c53acd3781ff5fb11001286",
+   "message": "build(deps): bump left-pad",
+   "authorName": "dependabot[bot]",
+   "authorEmail": "49699333+dependabot[bot]@users.noreply.github.com",
+   "date": "2026-03-12T10:00:00.000Z",
+   "additions": 2,
+   "deletions": 2
+  },
+  {
+   "sha": "326e8ac2958d148206b774d470e366acaea083d1",
+   "message": "docs: thanks\n\nCo-Authored-By: Jane Doe <jane@example.com>",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-03-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

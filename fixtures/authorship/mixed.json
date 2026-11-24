@@ -1,0 +1,130 @@
+{
+ "id": "mixed",
+ "description": "Partly AI-assisted (Copilot); README admits AI help but does not name the tool.",
+ "humanWritten": false,
+ "paths": [
+  ".github/copilot-instructions.md",
+  "README.md",
+  "src/app.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n\nParts of this project were AI-assisted.\n"
+  },
+  {
+   "path": "src/app.py",
+   "content": "def add(a, b):\n    return a + b\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "d83c297cddfc49adc307e941ffbb4d747cd8177c",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "55794a3ca04639c38a18e793416f66c923b66249",
+   "message": "fix off-by-one",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "02310e3197c7b08003eda4050436f3d26b8aaeb5",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "6a00295e8237105488ddbd365795c2182fa19e2f",
+   "message": "tidy readme\n\nCo-authored-by: Copilot <copilot@github.com>",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-10T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "84baa603245ac8665d0df47dba531ea6741b23d9",
+   "message": "handle empty input",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "7efa071e929ea48fbde32451d4e8000a6342cdec",
+   "message": "bump version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-16T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "123aa838f1642e002d12a3ec93d99aaedcf99c46",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-19T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "f226e45ffb0374213aae23067a4316db890f641a",
+   "message": "fix off-by-one\n\nCo-authored-by: Copilot <copilot@github.com>",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-22T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "26b04de3292dc3ec36f6e11a17dcc8ef61fe2504",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-25T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "d04a0b7d85d0d89db13bca642616503cb99dd995",
+   "message": "tidy readme",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-28T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "d9a91f961745e0ba8ba29c5d725ec9496b30dbda",
+   "message": "handle empty input",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "90f29815e4437ee11b9852106225d46873f911b7",
+   "message": "bump version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-02-03T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

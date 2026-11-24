@@ -1,0 +1,117 @@
+{
+ "note": "Self-authored: written together with the detectors, so it measures plumbing, not real-world accuracy.",
+ "cases": [
+  {
+   "id": "ai-disclosed",
+   "humanWritten": false,
+   "expectedStatus": "disclosed",
+   "expectedOverall": "clear",
+   "expectedSignals": [
+    "tool-file:CLAUDE.md",
+    "commit-trailer:71369ce",
+    "commit-trailer:113dfb5",
+    "readme:ai"
+   ],
+   "expectedSpeculative": [],
+   "note": "Strong signals and an accurate README disclosure."
+  },
+  {
+   "id": "ai-undisclosed",
+   "humanWritten": false,
+   "expectedStatus": "undisclosed",
+   "expectedOverall": "action-needed",
+   "expectedSignals": [
+    "tool-file:.cursorrules",
+    "tool-file:.cursor/",
+    "commit-trailer:ca57c8d",
+    "history:burst"
+   ],
+   "expectedSpeculative": [],
+   "note": "Strong signals, no disclosure; a burst of large commits as moderate evidence."
+  },
+  {
+   "id": "claims-handwritten-has-claude",
+   "humanWritten": false,
+   "expectedStatus": "mismatch",
+   "expectedOverall": "action-needed",
+   "expectedSignals": [
+    "tool-file:CLAUDE.md",
+    "readme:human"
+   ],
+   "expectedSpeculative": [],
+   "note": "Disclosure mismatch."
+  },
+  {
+   "id": "human-clean",
+   "humanWritten": true,
+   "expectedStatus": "none-found",
+   "expectedOverall": "clear",
+   "expectedSignals": [],
+   "expectedSpeculative": [],
+   "note": "Nothing found; not proof of anything."
+  },
+  {
+   "id": "human-fp-comments",
+   "humanWritten": true,
+   "expectedStatus": "none-found",
+   "expectedOverall": "clear",
+   "expectedSignals": [],
+   "expectedSpeculative": [
+    "style:comment-density",
+    "style:placeholder"
+   ],
+   "note": "False-positive style signals must stay speculative and leave the result clear."
+  },
+  {
+   "id": "human-fp-history",
+   "humanWritten": true,
+   "expectedStatus": "none-found",
+   "expectedOverall": "clear",
+   "expectedSignals": [],
+   "expectedSpeculative": [
+    "history:large-initial",
+    "history:uniform-messages"
+   ],
+   "note": "Bots and human co-authors are not AI signals; history shape stays speculative."
+  },
+  {
+   "id": "human-fp-names",
+   "humanWritten": true,
+   "expectedStatus": "none-found",
+   "expectedOverall": "clear",
+   "expectedSignals": [
+    "readme:human"
+   ],
+   "expectedSpeculative": [
+    "style:generic-names",
+    "style:boilerplate-docs"
+   ],
+   "note": "Unverifiable human claim; style signals stay speculative."
+  },
+  {
+   "id": "mixed",
+   "humanWritten": false,
+   "expectedStatus": "disclosed",
+   "expectedOverall": "needs-review",
+   "expectedSignals": [
+    "tool-file:.github/copilot-instructions.md",
+    "commit-trailer:6a00295",
+    "commit-trailer:f226e45",
+    "readme:ai"
+   ],
+   "expectedSpeculative": [],
+   "note": "Disclosed, but the detected tool is not named: needs review."
+  },
+  {
+   "id": "ai-readme-only",
+   "humanWritten": false,
+   "expectedStatus": "disclosed",
+   "expectedOverall": "clear",
+   "expectedSignals": [
+    "readme:ai"
+   ],
+   "expectedSpeculative": [],
+   "note": "Owner's own account accepted as the disclosure."
+  }
+ ]
+}

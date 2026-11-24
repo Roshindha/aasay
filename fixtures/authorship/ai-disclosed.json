@@ -1,0 +1,68 @@
+{
+ "id": "ai-disclosed",
+ "description": "AI-assisted (Claude Code) and the README says so.",
+ "humanWritten": false,
+ "paths": [
+  "CLAUDE.md",
+  "README.md",
+  "src/app.py",
+  "tests/test_app.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n\n## How this was built\n\nThis project was built with Claude Code. I reviewed and tested every change.\n"
+  },
+  {
+   "path": "src/app.py",
+   "content": "def add(a, b):\n    return a + b\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "aef2a7e3ce5511005094f525d282de8d06844c27",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "89e2e94eb635918c17eecd0b6d04058c4b7e6e35",
+   "message": "fix off-by-one",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "71369cec1bd869fe59df6de49c83d0c9868e4af8",
+   "message": "add tests\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "c2fc5be9d7de8876805833e504c3a7fe04102027",
+   "message": "tidy readme",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-10T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "113dfb5c41ed543d54e778e98daa46a35c19c3e0",
+   "message": "handle empty input\n\nCo-Authored-By: Claude <noreply@anthropic.com>",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

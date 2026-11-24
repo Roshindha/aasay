@@ -1,0 +1,85 @@
+{
+ "id": "human-fp-comments",
+ "description": "Human-written teaching code: very comment-dense, with deliberate TODO placeholders.",
+ "humanWritten": true,
+ "paths": [
+  "README.md",
+  "lessons/one.py",
+  "lessons/two.py",
+  "src/stubs.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n"
+  },
+  {
+   "path": "lessons/one.py",
+   "content": "# step 0: explained for students\nx1 = 1\n# step 2: explained for students\nx3 = 3\n# step 4: explained for students\nx5 = 5\n# step 6: explained for students\nx7 = 7\n# step 8: explained for students\nx9 = 9\n# step 10: explained for students\nx11 = 11\n# step 12: explained for students\nx13 = 13\n# step 14: explained for students\nx15 = 15\n# step 16: explained for students\nx17 = 17\n# step 18: explained for students\nx19 = 19\n# step 20: explained for students\nx21 = 21\n# step 22: explained for students\nx23 = 23\n# step 24: explained for students\nx25 = 25\n# step 26: explained for students\nx27 = 27\n# step 28: explained for students\nx29 = 29\n# step 30: explained for students\nx31 = 31\n# step 32: explained for students\nx33 = 33\n# step 34: explained for students\nx35 = 35\n# step 36: explained for students\nx37 = 37\n# step 38: explained for students\nx39 = 39\n# step 40: explained for students\nx41 = 41\n# step 42: explained for students\nx43 = 43\n# step 44: explained for students\nx45 = 45\n# step 46: explained for students\nx47 = 47\n# step 48: explained for students\nx49 = 49\n# step 50: explained for students\nx51 = 51\n# step 52: explained for students\nx53 = 53\n# step 54: explained for students\nx55 = 55\n# step 56: explained for students\nx57 = 57\n# step 58: explained for students\nx59 = 59\n"
+  },
+  {
+   "path": "lessons/two.py",
+   "content": "# step 0: explained for students\nx1 = 1\n# step 2: explained for students\nx3 = 3\n# step 4: explained for students\nx5 = 5\n# step 6: explained for students\nx7 = 7\n# step 8: explained for students\nx9 = 9\n# step 10: explained for students\nx11 = 11\n# step 12: explained for students\nx13 = 13\n# step 14: explained for students\nx15 = 15\n# step 16: explained for students\nx17 = 17\n# step 18: explained for students\nx19 = 19\n# step 20: explained for students\nx21 = 21\n# step 22: explained for students\nx23 = 23\n# step 24: explained for students\nx25 = 25\n# step 26: explained for students\nx27 = 27\n# step 28: explained for students\nx29 = 29\n# step 30: explained for students\nx31 = 31\n# step 32: explained for students\nx33 = 33\n# step 34: explained for students\nx35 = 35\n# step 36: explained for students\nx37 = 37\n# step 38: explained for students\nx39 = 39\n# step 40: explained for students\nx41 = 41\n# step 42: explained for students\nx43 = 43\n# step 44: explained for students\nx45 = 45\n# step 46: explained for students\nx47 = 47\n# step 48: explained for students\nx49 = 49\n# step 50: explained for students\nx51 = 51\n# step 52: explained for students\nx53 = 53\n# step 54: explained for students\nx55 = 55\n# step 56: explained for students\nx57 = 57\n# step 58: explained for students\nx59 = 59\n"
+  },
+  {
+   "path": "src/stubs.py",
+   "content": "def a():\n    pass  # TODO\ndef b():\n    raise NotImplementedError\ndef c():\n    # TODO: implement\n    pass\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "9a65e6de0882a4c8d5978568e779151e0dbbd288",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "fd18938015159a489cfe4d54ade092c130a9c6ea",
+   "message": "fix off-by-one",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "4e857662ada054a73f86e709d6db4ea02d9619a9",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "ac013422fadeaee95c29f6dce4bcfcc579018690",
+   "message": "tidy readme",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-10T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "7b0706a3df8aead2d95992aaf938996a2a3e5f03",
+   "message": "handle empty input",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "32066b8f9e1b3dfc1a1128faa18217563c758b47",
+   "message": "bump version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-16T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

@@ -1,0 +1,80 @@
+{
+ "id": "human-fp-names",
+ "description": "Human-written tutorial: generic names, templated docstrings, and a README that says hand-written.",
+ "humanWritten": true,
+ "paths": [
+  "README.md",
+  "tutorial/steps.py",
+  "tutorial/names.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n\nThis tutorial is hand-written.\n"
+  },
+  {
+   "path": "tutorial/steps.py",
+   "content": "def step_0(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_1(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_2(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_3(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_4(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_5(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_6(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_7(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n\ndef step_8(a):\n    \"\"\"Tutorial step.\n\n    Args:\n        a: input\n    Returns:\n        output\n    \"\"\"\n    return a\n"
+  },
+  {
+   "path": "tutorial/names.py",
+   "content": "def process_data(x):\n    \"\"\"Example.\n\n    Args:\n        x: input\n    Returns:\n        output\n    \"\"\"\n    return x\ndef handle_data(x):\n    \"\"\"Example.\n\n    Args:\n        x: input\n    Returns:\n        output\n    \"\"\"\n    return x\ndef foo(x):\n    \"\"\"Example.\n\n    Args:\n        x: input\n    Returns:\n        output\n    \"\"\"\n    return 1\ndef bar(x):\n    \"\"\"Example.\n\n    Args:\n        x: input\n    Returns:\n        output\n    \"\"\"\n    return 2\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "55e33118653fe593c21be77d22172d7e168eb4a2",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "f156549e5de23a6c9903824cc07c6c5e3f9a5df5",
+   "message": "fix off-by-one",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "ef7d2ff4db68ec815adfa350897c518b4ed643a7",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "87955c6d07a573e9dce6118ec26d2e76700594fe",
+   "message": "tidy readme",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-10T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "143f1e1bd8cf2a9fdb74e7b820fd7f72bf4468f6",
+   "message": "handle empty input",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-13T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "5601cdf5bdf9021abaa2dc7e19a23e3025f8907f",
+   "message": "bump version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-16T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  }
+ ]
+}

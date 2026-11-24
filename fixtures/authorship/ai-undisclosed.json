@@ -1,0 +1,104 @@
+{
+ "id": "ai-undisclosed",
+ "description": "AI-assisted with Cursor and Claude Code; README says nothing.",
+ "humanWritten": false,
+ "paths": [
+  ".cursorrules",
+  ".cursor/rules/style.mdc",
+  "README.md",
+  "src/app.py"
+ ],
+ "files": [
+  {
+   "path": "README.md",
+   "content": "# Project\n\nA small command-line tool.\n\n## Usage\n\nRun it.\n"
+  },
+  {
+   "path": "src/app.py",
+   "content": "def add(a, b):\n    return a + b\n"
+  }
+ ],
+ "commits": [
+  {
+   "sha": "edd8f65d883873c905155a9b9dd2122b013db223",
+   "message": "initial version",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-01T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "ca57c8d5fa727fe1723fb12e444d52076df2aca1",
+   "message": "fix off-by-one\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-04T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "8cac04c233eb6a320de80d9cd0a9ad9932deec36",
+   "message": "add tests",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-07T10:00:00.000Z",
+   "additions": 40,
+   "deletions": 5
+  },
+  {
+   "sha": "744407294c1e91b1aabb94eba07c3e6352802cdb",
+   "message": "add module 0",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:00:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  },
+  {
+   "sha": "6996255a550a55cb14999824e64f1d6bbee7d11b",
+   "message": "add module 1",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:04:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  },
+  {
+   "sha": "9e7d91a6b4d538c6703154a5c0804e1f0bd34eb9",
+   "message": "add module 2",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:08:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  },
+  {
+   "sha": "caa4e5b713ad9bfc027a33a96ba9219b6cdb8c0e",
+   "message": "add module 3",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:12:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  },
+  {
+   "sha": "6532386e51afe3341430336bedb56fe4b74f2ce7",
+   "message": "add module 4",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:16:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  },
+  {
+   "sha": "68e91fb81ce5ee46ae03d1b1325f14bb2fcadbb8",
+   "message": "add module 5",
+   "authorName": "Sam Rivera",
+   "authorEmail": "sam@example.com",
+   "date": "2026-01-31T10:20:00.000Z",
+   "additions": 450,
+   "deletions": 20
+  }
+ ]
+}
