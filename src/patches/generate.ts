@@ -152,7 +152,8 @@ function theaterCandidates(f: Finding, files: SourceFile[]): PatchCandidate[] {
 
 export function generateCandidates(f: Finding, files: SourceFile[]): PatchCandidate[] {
   const all =
-    f.lane === "phantom-dependency" ? phantomCandidates(f, files)
+    f.lane === "authorship" ? [] // never auto-patched: signals are disclosed, not edited away
+    : f.lane === "phantom-dependency" ? phantomCandidates(f, files)
     : f.lane === "hallucination" ? hallucinationCandidates(f, files)
     : f.lane === "spec-drift" ? driftCandidates(f, files)
     : theaterCandidates(f, files);

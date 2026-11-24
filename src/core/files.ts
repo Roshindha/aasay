@@ -40,3 +40,18 @@ export function buildTelemetry(files: SourceFile[], extraCacheKeys: string[] = [
     cacheKeys: [...files.map(contentKey), ...extraCacheKeys],
   };
 }
+
+/** Every file path under `root` (hidden folders such as .claude/ and .cursor/ included, .git and dependency folders skipped). */
+export function listPaths(root: string, max = 5000): string[] {
+  const out: string[] = [];
+  const skip = new Set([".git", "node_modules", ".next", "dist", "build", "__pycache__", ".venv", "venv", ".assay-cache", "coverage"]);
+  const walk = (dir: string) => {
+    for (const ent of fs.readdirSync(dir, { withFileTypes: true }).sort((a, b) => a.name.localeCompare(b.name))) {
+      if (out.length >= max) return;
+      const full = path.join(dir, ent.name);
+      if (ent.isDirectory()) { if (!skip.has(ent.name)) walk(full); } else if (ent.isFile()) out.push(path.relative(root, full).split(path.sep).join("/"));
+    }
+  };
+  walk(root);
+  return out;
+}

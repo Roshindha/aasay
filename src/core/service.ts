@@ -8,7 +8,8 @@ import { scorePatch } from "@/patches/score";
 import { runTournament, type TournamentResult } from "@/patches/tournament";
 import { RegistryClient } from "@/deps/registry";
 import { fixturesDir } from "@/deps/popular";
-import { contentKey, loadDir } from "./files";
+import { readLocalCommits } from "@/authorship/git-local";
+import { contentKey, listPaths, loadDir } from "./files";
 import { createLlm } from "./llm";
 import { runReview, type ReviewResult } from "./pipeline";
 import type { EvalResult, PatchCandidate, ScoredPatch, SourceFile } from "./types";
@@ -64,7 +65,7 @@ export async function scanLocal(dir: string, opts: ScanOptions = {}): Promise<Sc
   const files = loadDir(root);
   if (!files.length) throw new Error(`No reviewable files found under ${root}`);
   const reg = client(opts);
-  const review = await runReview({ files, registry: reg, llm: createLlm() });
+  const review = await runReview({ files, registry: reg, llm: createLlm(), repo: { paths: listPaths(root), commits: readLocalCommits(root) } });
   return putScan({ id: scanId(files, "local"), source: "local", label: root, files, review, offline: usedNoNetwork(reg), notes: [`${files.length} files inspected`] });
 }
 
@@ -73,7 +74,7 @@ export async function scanGithub(url: string, opts: ScanOptions & { fetchImpl?: 
   const fetched = await fetchGithub(ref, { token: process.env.GITHUB_TOKEN || undefined, fetchImpl: opts.fetchImpl });
   if (!fetched.files.length) throw new Error("No reviewable files were fetched from that URL.");
   const reg = client(opts);
-  const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm() });
+  const review = await runReview({ files: fetched.files, registry: reg, llm: createLlm(), repo: { paths: fetched.paths, commits: fetched.commits ?? [] } });
   const notes = [`ref ${fetched.ref.slice(0, 10)}`, `${fetched.files.length} files fetched`];
   if (fetched.truncated) notes.push("truncated by file cap");
   if (fetched.skipped.length) notes.push(`${fetched.skipped.length} skipped (size/cap)`);
@@ -104,6 +105,7 @@ export function scanView(s: Scan) {
     id: s.id, source: s.source, label: s.label, notes: s.notes, llm: s.review.llm, offline: s.offline,
     findings: s.review.findings, graph: s.review.graph, telemetry: s.review.telemetry,
     eval: s.eval ?? null,
+    authorship: { report: s.review.authorship, disclosure: s.review.disclosure },
     summary: {
       total: s.review.findings.length,
       byLabel: countBy(s.review.findings.map((f) => f.label)),

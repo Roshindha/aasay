@@ -22,10 +22,10 @@ beforeAll(async () => {
 afterAll(async () => { await client?.close(); });
 
 describe("assay MCP server over stdio", () => {
-  it("identifies as 'assay' and lists the six tools", async () => {
+  it("identifies as 'assay' and lists the seven tools", async () => {
     expect(client.getServerVersion()?.name).toBe("assay");
     const names = (await client.listTools()).tools.map((t) => t.name).sort();
-    expect(names).toEqual(["assay_check_deps", "assay_eval", "assay_fix", "assay_handoff", "assay_review", "assay_score_patch"]);
+    expect(names).toEqual(["assay_check_authorship", "assay_check_deps", "assay_eval", "assay_fix", "assay_handoff", "assay_review", "assay_score_patch"]);
   });
 
   it("assay_eval reports metrics and finds both phantom bugs", async () => {
@@ -50,6 +50,28 @@ describe("assay MCP server over stdio", () => {
   it("assay_check_deps returns dependency issues", async () => {
     const r = JSON.parse((await call("assay_check_deps", { source: "seeded" })).text);
     expect(r.issues.map((i: { packageName: string }) => i.packageName).sort()).toEqual(["express-validator-pro", "fastjsonvalidate"]);
+  });
+
+  it("assay_check_authorship lists fixtures with eval metrics, returns a report and disclosure draft, and refuses scrub requests", async () => {
+    const overview = JSON.parse((await call("assay_check_authorship", { source: "seeded" })).text);
+    expect(overview.cases.length).toBeGreaterThanOrEqual(6);
+    expect(overview.eval).toMatchObject({ gate: "pass", falsePositiveRate: 0 });
+    const mismatch = JSON.parse((await call("assay_check_authorship", { source: "seeded", case: "claims-handwritten-has-claude" })).text);
+    expect(mismatch.report.status).toBe("mismatch");
+    expect(mismatch.report.signals.map((s: { ref: string }) => s.ref)).toEqual(expect.arrayContaining(["tool-file:CLAUDE.md", "readme:human"]));
+    expect(mismatch.disclosure.markdown).toContain("## How this was built");
+    expect(mismatch.report.caveats.join(" ")).toMatch(/never says who or what wrote/);
+    const refused = await call("assay_check_authorship", { source: "seeded", case: "mixed", request: "remove the AI trailers from the commit history" });
+    expect(refused.isError).toBe(true);
+    expect(refused.text).toMatch(/will not remove, hide, rewrite or obfuscate/);
+    const ok = await call("assay_check_authorship", { source: "seeded", case: "mixed", request: "help me disclose this accurately" });
+    expect(ok.isError).toBe(false);
+    expect((await call("assay_check_authorship", { source: "seeded", case: "nope" })).isError).toBe(true);
+  });
+
+  it("assay_eval also reports the authorship eval", async () => {
+    const r = JSON.parse((await call("assay_eval")).text);
+    expect(r.authorship).toMatchObject({ gate: "pass", precision: 1, recall: 1, falsePositiveRate: 0 });
   });
 
   it("returns tool errors (not crashes) for bad input", async () => {

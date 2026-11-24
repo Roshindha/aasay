@@ -11,7 +11,10 @@ export function loadAnswerKey(dir = fixturesDir()): AnswerKey {
   return AnswerKeySchema.parse(JSON.parse(fs.readFileSync(path.join(dir, "answer-key.json"), "utf8")));
 }
 
-export function scoreAgainstKey(findings: Finding[], key: AnswerKey): EvalResult {
+export function scoreAgainstKey(allFindings: Finding[], key: AnswerKey): EvalResult {
+  // Only lanes the answer key covers are scored; lanes without planted bugs (e.g. authorship) are reported elsewhere.
+  const keyLanes = new Set(key.bugs.map((b) => b.lane));
+  const findings = allFindings.filter((f) => [f.lane, ...f.lanes].some((l) => keyLanes.has(l)));
   const matchedFinding = new Set<string>();
   const found: string[] = [], missed: string[] = [];
   for (const bug of key.bugs) {

@@ -12,7 +12,9 @@ export function buildHandoff(t: TournamentResult): string {
     ...(f.specifier ? [`- Specifier: ${f.specifier} (${f.registry}: ${f.registryStatus})`] : []),
     ``, `## Why`, f.detail, ``, `## Evidence`, ...f.evidence.map((e) => `- ${e}`), ``,
   ];
-  if (!t.winner) {
+  if (f.lane === "authorship") {
+    lines.push(`## Recommended action`, `This is a signal, not a defect, and it is never patched automatically. Decide what is accurate and disclose it: run \`assay_check_authorship\` for a draft "How this was built" section and edit it with your own account. Do not remove or hide the signal.`);
+  } else if (!t.winner) {
     lines.push(`## Recommended action`, `No automatically generated patch passed the gate. A human or agent should fix this manually.`);
   } else {
     const w = t.winner;
@@ -25,6 +27,6 @@ export function buildHandoff(t: TournamentResult): string {
     const others = t.ranked.filter((r) => r !== w);
     if (others.length) lines.push(``, `## Other candidates`, ...others.map((r) => `- ${r.candidate.strategy}: ${r.candidate.summary} — ${r.gate.eligible ? `score ${r.total.toFixed(2)}` : `ineligible (${r.gate.reason})`}`));
   }
-  lines.push(``, `## Verify`, `Re-run \`assay_review\` on the patched tree; this finding should be gone and no new finding of medium severity or higher should appear.`);
+  lines.push(``, `## Verify`, f.lane === "authorship" ? `Re-run \`assay_check_authorship\` after updating the README; the status should become \`disclosed\` and the signals should still be listed.` : `Re-run \`assay_review\` on the patched tree; this finding should be gone and no new finding of medium severity or higher should appear.`);
   return lines.join("\n") + "\n";
 }

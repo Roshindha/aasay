@@ -1,11 +1,14 @@
 import crypto from "node:crypto";
 import { FindingSchema, type Finding, type SourceFile } from "@/core/types";
+import type { AuthorshipReport } from "@/authorship/types";
 import type { DepReport } from "@/deps/resolver";
 
 export interface LaneContext {
   files: SourceFile[];
   /** Present when the dependency analysis has run (always, in the default pipeline) */
   deps?: DepReport;
+  /** Present when the authorship audit has run */
+  authorship?: AuthorshipReport;
 }
 
 export type Lane = (ctx: LaneContext) => Finding[];

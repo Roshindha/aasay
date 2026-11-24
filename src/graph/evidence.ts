@@ -13,8 +13,13 @@ export function buildEvidenceGraph(findings: Finding[], deps?: DepReport): Evide
 
   for (const f of findings) {
     addNode(f.id, "finding", `${f.title} [${f.label}]`);
-    addNode(`file:${f.file}`, "file", f.file);
-    addEdge(f.id, `file:${f.file}`, "located-in");
+    if (f.commit) {
+      addNode(`commit:${f.commit.slice(0, 7)}`, "commit", f.commit.slice(0, 7));
+      addEdge(f.id, `commit:${f.commit.slice(0, 7)}`, "located-in");
+    } else {
+      addNode(`file:${f.file}`, "file", f.file);
+      addEdge(f.id, `file:${f.file}`, "located-in");
+    }
     if (f.lanes.length > 1) for (const l of f.lanes) addNode(`lane:${l}`, "finding", `lane ${l}`), addEdge(f.id, `lane:${l}`, "duplicates");
     if (f.lane === "phantom-dependency" && f.specifier && deps) {
       const imp = deps.imports.find((i) => i.file === f.file && i.line === f.line && i.specifier === f.specifier);

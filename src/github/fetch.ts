@@ -10,10 +10,10 @@ export function parseGithubUrl(url: string): GithubRef {
 }
 
 export interface FetchOptions { token?: string; fetchImpl?: FetchLike; maxFiles?: number; maxBytes?: number }
-export interface FetchedRepo { files: SourceFile[]; ref: string; skipped: string[]; truncated: boolean; changed?: string[] }
+export interface FetchedRepo { files: SourceFile[]; ref: string; skipped: string[]; truncated: boolean; changed?: string[]; /** Every file path in the fetched tree (not just the downloaded ones) */ paths: string[]; commits?: import("@/authorship/types").CommitInfo[] }
 
 const REVIEWABLE = /\.(m|c)?(t|j)sx?$|\.py$/;
-const SUPPORT = /(^|\/)(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|requirements[^/]*\.txt|pyproject\.toml|Pipfile|Pipfile\.lock|poetry\.lock|tsconfig[^/]*\.json|jsconfig\.json|\.npmrc|(spec|specs|requirements|design)[^/]*\.md)$/i;
+const SUPPORT = /(^|\/)(package\.json|package-lock\.json|pnpm-lock\.yaml|yarn\.lock|requirements[^/]*\.txt|pyproject\.toml|Pipfile|Pipfile\.lock|poetry\.lock|tsconfig[^/]*\.json|jsconfig\.json|\.npmrc|readme[^/]*\.(md|rst|txt)|docs\/[^/]+\.(md|mdx)|(spec|specs|requirements|design)[^/]*\.md)$/i;
 
 export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Promise<FetchedRepo> {
   const maxFiles = opts.maxFiles ?? 80, maxBytes = opts.maxBytes ?? 150_000;
@@ -66,5 +66,5 @@ export async function fetchGithub(ref: GithubRef, opts: FetchOptions = {}): Prom
     if (content.length > maxBytes) { skipped.push(`${p} (> ${maxBytes} chars)`); continue; }
     files.push({ path: p, content });
   }
-  return { files, ref: sha, skipped, truncated, changed };
+  return { files, ref: sha, skipped, truncated, changed, paths: allPaths.map((p) => p.path) };
 }

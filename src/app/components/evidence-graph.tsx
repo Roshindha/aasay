@@ -9,9 +9,9 @@ type Node = EvidenceGraph["nodes"][number];
 type Edge = EvidenceGraph["edges"][number];
 type Kind = Node["kind"];
 
-export const COLUMNS: Kind[] = ["finding", "file", "dependency", "manifest"];
+export const COLUMNS: Kind[] = ["finding", "file", "commit", "dependency", "manifest"];
 const KIND_TEXT: Record<Kind, { tag: string; name: string; plural: string }> = {
-  finding: { tag: "FINDING", name: "Finding", plural: "Findings" }, file: { tag: "FILE", name: "File", plural: "Files" }, dependency: { tag: "DEPENDENCY", name: "Dependency", plural: "Dependencies" }, manifest: { tag: "MANIFEST", name: "Manifest", plural: "Manifests" },
+  finding: { tag: "FINDING", name: "Finding", plural: "Findings" }, file: { tag: "FILE", name: "File", plural: "Files" }, dependency: { tag: "DEPENDENCY", name: "Dependency", plural: "Dependencies" }, manifest: { tag: "MANIFEST", name: "Manifest", plural: "Manifests" }, commit: { tag: "COMMIT", name: "Commit", plural: "Commits" },
 };
 const EDGE_TEXT: Record<Edge["kind"], string> = {
   "located-in": "located in", imports: "imports", "declared-in": "declared in", duplicates: "also reported by", "missing-from": "missing from",
@@ -26,7 +26,7 @@ const EDGE_STYLE: Record<Edge["kind"], { dash?: string; width: number; color: st
 };
 
 /** Column widths by node kind: findings carry the longest labels. */
-export const COL_W: Record<Kind, number> = { finding: 300, file: 190, dependency: 250, manifest: 170 };
+export const COL_W: Record<Kind, number> = { finding: 300, file: 190, commit: 130, dependency: 250, manifest: 170 };
 export const NODE_H = 40, ROW_GAP = 10, COL_GAP = 36, PAD = 12, HEAD = 22, LINE_PX = 6.3, MAX_LINES = 2;
 
 export function layoutGraph(g: EvidenceGraph) {

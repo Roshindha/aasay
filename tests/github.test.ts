@@ -24,7 +24,8 @@ describe("github fetcher", () => {
       return new Response("nf", { status: 404 });
     };
     const out = await fetchGithub({ owner: "o", repo: "r", pull: 3 }, { token: "ghp_secret", fetchImpl: impl });
-    expect(out.files.map((f) => f.path).sort()).toEqual(["package.json", "src/a.ts"]);
+    expect(out.files.map((f) => f.path).sort()).toEqual(["README.md", "package.json", "src/a.ts"]); // README is read for the authorship audit
+    expect(out.paths.sort()).toEqual(["big.ts", "package.json", "src/a.ts"]);
     expect(out.changed).toEqual(["src/a.ts", "README.md"]);
     expect(seen.every((s) => new URL(s.url).hostname === "api.github.com")).toBe(true);
     expect(seen.every((s) => s.auth === "Bearer ghp_secret")).toBe(true);

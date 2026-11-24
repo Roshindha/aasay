@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const LaneSchema = z.enum(["hallucination", "spec-drift", "test-theater", "phantom-dependency"]);
+export const LaneSchema = z.enum(["hallucination", "spec-drift", "test-theater", "phantom-dependency", "authorship"]);
 export type Lane = z.infer<typeof LaneSchema>;
 
 export const SeveritySchema = z.enum(["critical", "high", "medium", "low"]);
@@ -33,6 +33,8 @@ export const FindingSchema = z.object({
   registry: RegistrySchema.optional(),
   registryStatus: RegistryStatusSchema.optional(),
   typosquatOf: z.string().optional(),
+  /** Authorship lane only: the commit the signal points at */
+  commit: z.string().optional(),
   /** Lanes that independently reported this finding after dedupe */
   lanes: z.array(LaneSchema).default([]),
 });
@@ -108,7 +110,7 @@ export type ScoredPatch = z.infer<typeof ScoredPatchSchema>;
 
 export const EvidenceNodeSchema = z.object({
   id: z.string(),
-  kind: z.enum(["finding", "file", "dependency", "manifest"]),
+  kind: z.enum(["finding", "file", "dependency", "manifest", "commit"]),
   label: z.string(),
 });
 export const EvidenceEdgeSchema = z.object({

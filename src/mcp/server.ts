@@ -5,6 +5,8 @@ import { z } from "zod";
 import {
   answerKeyJson, getScan, scanGithub, scanLocal, scanSeeded, scanView, scoreCustomPatch, tournamentFor, type Scan,
 } from "@/core/service";
+import { draftDisclosure } from "@/authorship/disclosure";
+import { assertRequestAllowed, authorshipCase, authorshipOverview } from "@/authorship/service";
 import { runSeededEval } from "@/judge/eval";
 
 const text = (v: unknown) => ({ content: [{ type: "text" as const, text: typeof v === "string" ? v : JSON.stringify(v, null, 2) }] });
@@ -53,7 +55,7 @@ export function createServer(): McpServer {
   server.registerTool("assay_eval", {
     description: "Run the seeded benchmark offline and report recall, precision, critical recall and gate status. Self-authored: measures plumbing, not real-world accuracy.",
     inputSchema: {},
-  }, async () => { try { const { result } = await runSeededEval(); return text(result); } catch (e) { return fail(e); } });
+  }, async () => { try { const { result } = await runSeededEval(); return text({ ...result, authorship: authorshipOverview().eval }); } catch (e) { return fail(e); } });
 
   server.registerTool("assay_check_deps", {
     description: "Phantom-dependency check only: imports vs manifests/lockfiles vs registry (npm, PyPI), plus typosquat hints.",
@@ -62,6 +64,24 @@ export function createServer(): McpServer {
     try {
       const v = scanView(await resolveScan(a));
       return text({ scanId: v.id, ...v.dependencies, findings: v.findings.filter((f) => f.lane === "phantom-dependency") });
+    } catch (e) { return fail(e); }
+  });
+
+  server.registerTool("assay_check_authorship", {
+    description: "Authorship & disclosure audit: which signals of AI-assisted authorship a repository contains (commit trailers, AI-tool files, README statements, history and style patterns), each with strength and evidence, a disclosure status, and a draft \"How this was built\" section. Reports signals, never a verdict about who wrote the code. Refuses requests to remove, hide or obfuscate signals.",
+    inputSchema: {
+      ...SourceShape,
+      case: z.string().optional().describe("Seeded authorship fixture id (source=seeded). Omit to list fixtures with eval metrics."),
+      owner_tools: z.array(z.string()).optional().describe("Tools you want named in the draft (marked as declared by you)"),
+      request: z.string().optional().describe("Optional free-text description of what you want done; requests to conceal signals are refused"),
+    },
+  }, async (a) => {
+    try {
+      assertRequestAllowed(a.request);
+      if ((a.source ?? "seeded") === "seeded") return text(a.case ? authorshipCase(a.case, { tools: a.owner_tools }) : authorshipOverview());
+      const scan = await resolveScan(a);
+      const disclosure = a.owner_tools?.length ? draftDisclosure(scan.review.authorship, { tools: a.owner_tools }) : scan.review.disclosure;
+      return text({ scanId: scan.id, label: scan.label, report: scan.review.authorship, disclosure });
     } catch (e) { return fail(e); }
   });
 

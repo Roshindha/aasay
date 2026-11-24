@@ -7,7 +7,7 @@ import { EmptyState, ErrorState, LoadingState } from "../components/states";
 import { useApp } from "../state";
 
 const pct = (n: number) => `${Math.round(n * 100)}%`;
-const LANES = ["hallucination", "spec-drift", "test-theater", "phantom-dependency"];
+const LANES = ["hallucination", "spec-drift", "test-theater", "phantom-dependency", "authorship"];
 
 export function SeededView() {
   const { seeded, loadSeeded, setSource } = useApp();
@@ -71,7 +71,7 @@ export function SeededView() {
                 {LANES.map((l) => {
                   const n = d.summary.byLane[l] ?? 0;
                   return (
-                    <li key={l} className="grid grid-cols-[120px_1fr_24px] items-center gap-3 text-xs">
+                    <li key={l} className="grid grid-cols-[132px_1fr_24px] items-center gap-3 text-xs">
                       <span className="font-mono text-muted">{l}</span>
                       <span className="h-2 rounded-full bg-surface-2" aria-hidden><span className="block h-2 rounded-full bg-muted" style={{ width: `${Math.min(100, (n / Math.max(1, d.summary.total)) * 100 * 2)}%` }} /></span>
                       <span className="num text-right font-semibold">{n}</span>
