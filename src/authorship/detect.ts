@@ -1,4 +1,4 @@
-import { AI_CLAIM_PATTERNS, HUMAN_CLAIM_PATTERNS, NEGATION_BEFORE, TOOL_FILE_RULES, identifyTool } from "./patterns";
+import { AI_CLAIM_PATTERNS, HUMAN_CLAIM_PATTERNS, NEGATION_BEFORE, OBJECT_OF_REVIEW_BEFORE, TOOL_FILE_RULES, identifyTool } from "./patterns";
 import { HISTORY_CAVEAT, STYLE_CAVEAT, type AuthorshipInput, type CommitInfo, type Signal } from "./types";
 
 const short = (sha: string) => sha.slice(0, 7);
@@ -83,7 +83,8 @@ export function detectReadmeStatements(files: AuthorshipInput["files"]): Signal[
       let hasAi = false;
       for (const re of AI_CLAIM_PATTERNS) {
         const m = re.exec(line);
-        if (m && !NEGATION_BEFORE.test(line.slice(0, m.index))) { hasAi = true; break; }
+        const before = m ? line.slice(0, m.index) : "";
+        if (m && !NEGATION_BEFORE.test(before) && !OBJECT_OF_REVIEW_BEFORE.test(before)) { hasAi = true; break; }
       }
       const clean = f.content.split(/\r?\n/)[i]!.trim().slice(0, 160);
       if (hasHuman) found["human-only"].push({ file: f.path, line: i + 1, text: clean });
@@ -162,11 +163,11 @@ export function detectHistoryPatterns(commits: CommitInfo[]): Signal[] {
 
 /* 5. Code-style patterns (always speculative) */
 const CODE = /\.(m|c)?(t|j)sx?$|\.py$/;
-const GENERIC = /\b(?:def|function|const|let|var)\s+(process_?data|handle_?data|do_?something|helper_?function|my_?function|example_?function|processData|handleData|doSomething|helperFunction|myFunction|exampleFunction|foo|bar|baz)\b/gi;
+const GENERIC = /\b(?:def|function|const|let|var)\s+(process_?data|handle_?data|do_?something|helper_?function|my_?function|example_?function|processData|handleData|doSomething|helperFunction|myFunction|exampleFunction|foo|bar|baz)\b/g;
 const PLACEHOLDER = /TODO:?\s*implement|implement (?:this|me|here)|your code here|lorem ipsum|replace (?:this|with your)|raise NotImplementedError|pass\s*#\s*TODO/gi;
 
 export function detectStylePatterns(files: AuthorshipInput["files"]): Signal[] {
-  const code = files.filter((f) => CODE.test(f.path) && !/(^|\/)(node_modules|fixtures|dist|build)\//.test(f.path));
+  const code = files.filter((f) => CODE.test(f.path) && !/(^|\/)(node_modules|fixtures|dist|build|tests?|__tests__|e2e)\//.test(f.path) && !/\.(test|spec)\.[mc]?[tj]sx?$|(^|\/)test_[^/]+\.py$/.test(f.path));
   const out: Signal[] = [];
   const sample = (hits: string[]) => hits.slice(0, 5).concat(hits.length > 5 ? [`… and ${hits.length - 5} more`] : []);
   const base = { kind: "style-pattern" as const, strength: "speculative" as const, caveat: STYLE_CAVEAT };

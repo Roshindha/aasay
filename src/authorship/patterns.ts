@@ -53,5 +53,8 @@ export const HUMAN_CLAIM_PATTERNS: RegExp[] = [
   /\bnot (?:written|generated|built|made|created) (?:with|by|using) (?:an? )?(?:AI|LLM|ChatGPT|Copilot|Claude)\b/i,
 ];
 
+/** "reviews AI-written code", "detects AI-generated text": the phrase is the *object* of a tool's work, not a statement about this project. */
+export const OBJECT_OF_REVIEW_BEFORE = /\b(?:review\w*|detect\w*|find\w*|check\w*|scan\w*|audit\w*|identif\w*|spot\w*|catch\w*|verif\w*|flag\w*|inspect\w*|analy[sz]\w*|handl\w*|support\w*|for|of|about|against|from|in|on)\s+(?:the\s+|any\s+|all\s+|your\s+|some\s+|other\s+)?$/i;
+
 /** A phrase like "not built with AI" must not count as an AI claim. */
 export const NEGATION_BEFORE = /\b(?:not|never|no|without|isn'?t|wasn'?t|nor)\b[^.\n]{0,24}$/i;

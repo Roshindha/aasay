@@ -8,7 +8,7 @@ import { scorePatch } from "@/patches/score";
 import { runTournament, type TournamentResult } from "@/patches/tournament";
 import { RegistryClient } from "@/deps/registry";
 import { fixturesDir } from "@/deps/popular";
-import { readLocalCommits } from "@/authorship/git-local";
+import { readLocalCommits, readTrackedPaths } from "@/authorship/git-local";
 import { contentKey, listPaths, loadDir } from "./files";
 import { createLlm } from "./llm";
 import { runReview, type ReviewResult } from "./pipeline";
@@ -65,7 +65,7 @@ export async function scanLocal(dir: string, opts: ScanOptions = {}): Promise<Sc
   const files = loadDir(root);
   if (!files.length) throw new Error(`No reviewable files found under ${root}`);
   const reg = client(opts);
-  const review = await runReview({ files, registry: reg, llm: createLlm(), repo: { paths: listPaths(root), commits: readLocalCommits(root) } });
+  const review = await runReview({ files, registry: reg, llm: createLlm(), repo: { paths: readTrackedPaths(root) ?? listPaths(root), commits: readLocalCommits(root) } });
   return putScan({ id: scanId(files, "local"), source: "local", label: root, files, review, offline: usedNoNetwork(reg), notes: [`${files.length} files inspected`] });
 }
 

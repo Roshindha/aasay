@@ -123,7 +123,7 @@ describe("authorship module is read-only", () => {
     for (const f of fs.readdirSync(dir)) {
       const src = fs.readFileSync(path.join(dir, f), "utf8");
       for (const m of src.matchAll(/\bfs\.(\w+)/g)) expect(READ.has(m[1]!), `${f}: fs.${m[1]}`).toBe(true);
-      for (const m of src.matchAll(/spawn(?:Sync)?\(\s*"([^"]+)"\s*,\s*\[\s*"([^"]+)"/g)) expect([m[1], m[2]], f).toEqual(["git", "log"]);
+      for (const m of src.matchAll(/spawn(?:Sync)?\(\s*"([^"]+)"\s*,\s*\[\s*"([^"]+)"/g)) { expect(m[1], f).toBe("git"); expect(["log", "ls-files"], f).toContain(m[2]); }
       expect(src, f).not.toMatch(/child_process.*exec\b|\bexecSync\b|filter-branch|filter-repo/);
     }
   });

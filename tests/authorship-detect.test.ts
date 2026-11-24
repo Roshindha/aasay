@@ -68,6 +68,12 @@ describe("3. README statements (moderate)", () => {
     const md = "Detects phrases like `built with AI`.\n\n```\nbuilt with Claude\nhand-written\n```\n<!-- vibe coded -->\n";
     expect(detectReadmeStatements([f("README.md", md)])).toEqual([]);
   });
+  it.each(["Assay reviews AI-written code in four lanes.", "Detects AI-generated text and AI-assisted commits.", "It finds hallucinations in code from AI assistants.", "Checks for AI-generated code."])("does not read a description of what a tool reviews as a disclosure: %s", (line) => {
+    expect(detectReadmeStatements([f("README.md", line)])).toEqual([]);
+  });
+  it.each(["This repo is AI-assisted.", "AI-assisted development.", "The code was AI-generated and then edited by me."])("still reads real statements: %s", (line) => {
+    expect(detectReadmeStatements([f("README.md", line)])[0]?.ref).toBe("readme:ai");
+  });
   it("reads docs/ pages but not arbitrary markdown", () => {
     expect(detectReadmeStatements([f("docs/about.md", "AI-assisted")]).length).toBe(1);
     expect(detectReadmeStatements([f("notes/todo.md", "AI-assisted")]).length).toBe(0);
@@ -120,6 +126,11 @@ describe("5. code-style patterns (always speculative, always with the caveat)", 
     const fn = (i: number) => `def f${i}(a):\n    """Do it.\n\n    Args:\n        a: x\n    Returns:\n        y\n    """\n    return a\n`;
     const out = detectStylePatterns([f("a.py", Array.from({ length: 9 }, (_, i) => fn(i)).join("\n"))]);
     expect(out.map((s) => s.ref)).toEqual(["style:boilerplate-docs"]);
+  });
+  it("does not flag capitalised component names, and ignores test, fixture and e2e code", () => {
+    expect(detectStylePatterns([f("src/ui.tsx", ["function Bar() {}", "const Foo = 1;", "function Baz() {}", "const Bar2 = 2; function Foo() {}"].join("\n"))])).toEqual([]);
+    const todo = many("    pass  # TODO", 5);
+    expect(detectStylePatterns([f("tests/a.py", todo), f("e2e/b.ts", todo), f("src/a.test.ts", todo), f("fixtures/x.py", todo), f("test_a.py", todo)])).toEqual([]);
   });
   it("never reports strong or moderate strength, and ignores ordinary code", () => {
     expect(detectStylePatterns([f("a.ts", "export function add(a: number, b: number) { return a + b; }")])).toEqual([]);

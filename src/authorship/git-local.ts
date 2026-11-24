@@ -27,3 +27,10 @@ export function readLocalCommits(dir: string, max = 300): CommitInfo[] {
   const r = spawnSync("git", ["log", `--max-count=${max}`, "--numstat", `--format=${SEP}%H${FIELD}%an${FIELD}%ae${FIELD}%cn${FIELD}%ce${FIELD}%aI${FIELD}%B${FIELD}`], { cwd: dir, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
   return r.status === 0 ? parseGitLog(r.stdout) : [];
 }
+
+/** Read-only: `git ls-files` (tracked files only). Returns null when `dir` is not a git repository. */
+export function readTrackedPaths(dir: string): string[] | null {
+  if (!fs.existsSync(path.join(dir, ".git"))) return null;
+  const r = spawnSync("git", ["ls-files", "-z"], { cwd: dir, encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+  return r.status === 0 ? r.stdout.split("\0").filter(Boolean) : null;
+}
