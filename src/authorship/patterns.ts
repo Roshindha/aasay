@@ -47,7 +47,7 @@ export const HUMAN_CLAIM_PATTERNS: RegExp[] = [
   /\b100\s?%\s+(?:human|hand|manual)/i,
   /\bhuman[- ]written\b/i,
   /\bwritten (?:entirely )?by (?:a )?(?:human|hand|me|myself)\b/i,
-  /\b(?:no|zero)\s+(?:AI|LLM|generated code)\b/i,
+  /\b(?:no|zero)\s+(?:AI|LLMs?|generated code)(?:\s+(?:was|were|is|has|have|involved|involvement|used|use|assistance|help|code|text)\b|[.,;!]|\s*$)/i,
   /\bAI[- ]free\b/i,
   /\bwithout (?:any )?(?:AI|LLMs?|generative AI|Copilot|ChatGPT)\b/i,
   /\bnot (?:written|generated|built|made|created) (?:with|by|using) (?:an? )?(?:AI|LLM|ChatGPT|Copilot|Claude)\b/i,
@@ -55,6 +55,11 @@ export const HUMAN_CLAIM_PATTERNS: RegExp[] = [
 
 /** "reviews AI-written code", "detects AI-generated text": the phrase is the *object* of a tool's work, not a statement about this project. */
 export const OBJECT_OF_REVIEW_BEFORE = /\b(?:review\w*|detect\w*|find\w*|check\w*|scan\w*|audit\w*|identif\w*|spot\w*|catch\w*|verif\w*|flag\w*|inspect\w*|analy[sz]\w*|handl\w*|support\w*|for|of|about|against|from|in|on)\s+(?:the\s+|any\s+|all\s+|your\s+|some\s+|other\s+)?$/i;
+
+/** Text that *reports* a claim ("the README claims no AI use", "flags hand-written text", "pass as human-written") is not the project making it. */
+export const REPORTED_SPEECH_BEFORE = /(?:\b(?:claims?|claimed|claiming|statements?|for example|such as|detects?|flags?|whether|pass(?:es|ed|ing)?|if)\b|\be\.g\.)[^.\n]{0,40}$/i;
+/** "a human-written fixture", "hand-written examples": the phrase describes test data or samples, not the project. */
+export const DESCRIBES_SAMPLE_AFTER = /^\s*(?:fixtures?|repos?|repositor(?:y|ies)|samples?|examples?|cases?|code samples?|snippets?)\b/i;
 
 /** A phrase like "not built with AI" must not count as an AI claim. */
 export const NEGATION_BEFORE = /\b(?:not|never|no|without|isn'?t|wasn'?t|nor)\b[^.\n]{0,24}$/i;

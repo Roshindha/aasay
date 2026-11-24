@@ -1,4 +1,4 @@
-import { AI_CLAIM_PATTERNS, HUMAN_CLAIM_PATTERNS, NEGATION_BEFORE, OBJECT_OF_REVIEW_BEFORE, TOOL_FILE_RULES, identifyTool } from "./patterns";
+import { AI_CLAIM_PATTERNS, HUMAN_CLAIM_PATTERNS, DESCRIBES_SAMPLE_AFTER, NEGATION_BEFORE, OBJECT_OF_REVIEW_BEFORE, REPORTED_SPEECH_BEFORE, TOOL_FILE_RULES, identifyTool } from "./patterns";
 import { HISTORY_CAVEAT, STYLE_CAVEAT, type AuthorshipInput, type CommitInfo, type Signal } from "./types";
 
 const short = (sha: string) => sha.slice(0, 7);
@@ -79,12 +79,13 @@ export function detectReadmeStatements(files: AuthorshipInput["files"]): Signal[
   const found: Record<"ai-assisted" | "human-only", { file: string; line: number; text: string }[]> = { "ai-assisted": [], "human-only": [] };
   for (const f of files.filter((x) => isDoc(x.path))) {
     proseOnly(f.content).split("\n").forEach((line, i) => {
-      const hasHuman = HUMAN_CLAIM_PATTERNS.some((re) => re.test(line));
+      const reported = (m: RegExpExecArray) => REPORTED_SPEECH_BEFORE.test(line.slice(0, m.index)) || DESCRIBES_SAMPLE_AFTER.test(line.slice(m.index + m[0].length));
+      const hasHuman = HUMAN_CLAIM_PATTERNS.some((re) => { const m = re.exec(line); return !!m && !reported(m); });
       let hasAi = false;
       for (const re of AI_CLAIM_PATTERNS) {
         const m = re.exec(line);
         const before = m ? line.slice(0, m.index) : "";
-        if (m && !NEGATION_BEFORE.test(before) && !OBJECT_OF_REVIEW_BEFORE.test(before)) { hasAi = true; break; }
+        if (m && !NEGATION_BEFORE.test(before) && !OBJECT_OF_REVIEW_BEFORE.test(before) && !reported(m)) { hasAi = true; break; }
       }
       const clean = f.content.split(/\r?\n/)[i]!.trim().slice(0, 160);
       if (hasHuman) found["human-only"].push({ file: f.path, line: i + 1, text: clean });

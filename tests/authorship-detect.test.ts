@@ -74,6 +74,20 @@ describe("3. README statements (moderate)", () => {
   it.each(["This repo is AI-assisted.", "AI-assisted development.", "The code was AI-generated and then edited by me."])("still reads real statements: %s", (line) => {
     expect(detectReadmeStatements([f("README.md", line)])[0]?.ref).toBe("readme:ai");
   });
+  it.each([
+    "The README claims no AI use, but strong signals exist.",
+    "Flags hand-written claims that contradict the commits.",
+    "There is no mode that helps a repository pass as human-written.",
+    "Add a human-written fixture that shows how it misfires.",
+    "e.g. a README that says 100% human-written",
+    "Nine fixtures, including hand-written examples.",
+    "No AI-tool trailers were found in the commit messages.",
+  ])("does not read documentation about these claims as the project's own claim: %s", (line) => {
+    expect(detectReadmeStatements([f("README.md", line)])).toEqual([]);
+  });
+  it.each(["This project is hand-written.", "I wrote all of it by hand: 100% human-written code.", "Pair programmed with Claude Code.", "No AI was used.", "Zero AI involvement."])("still reads genuine first-person claims: %s", (line) => {
+    expect(detectReadmeStatements([f("README.md", line)]).length).toBe(1);
+  });
   it("reads docs/ pages but not arbitrary markdown", () => {
     expect(detectReadmeStatements([f("docs/about.md", "AI-assisted")]).length).toBe(1);
     expect(detectReadmeStatements([f("notes/todo.md", "AI-assisted")]).length).toBe(0);

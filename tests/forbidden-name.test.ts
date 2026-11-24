@@ -7,8 +7,11 @@ const NAME = String.fromCharCode(115, 99, 111, 117, 116);
 const RE = new RegExp(NAME, "i");
 const ROOT = path.resolve(__dirname, "..");
 const SKIP_DIRS = new Set(["node_modules", ".git", ".next", ".assay-cache", "coverage"]);
-/** The user-supplied spec is the only allowed exception (see DECISIONS.md F1). */
+/** The user-supplied spec is an allowed exception (see DECISIONS.md F1). */
 const SKIP_FILES = new Set(["PLAN.md"]);
+/** README.md may name the project it was inspired by, on one line that starts with this prefix (DECISIONS.md F45). */
+const ACK_PREFIX = "Inspired by";
+const stripAcknowledgement = (rel: string, text: string) => (rel === "README.md" ? text.split("\n").filter((l) => !l.startsWith(ACK_PREFIX)).join("\n") : text);
 
 function walk(dir: string, out: string[] = []): string[] {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
@@ -27,10 +30,15 @@ describe("forbidden former project name", () => {
   });
   it("does not appear in any file content (case-insensitive)", () => {
     const hits = files.filter((f) => {
-      const buf = fs.readFileSync(f);
-      return RE.test(buf.toString("utf8"));
+      const text = stripAcknowledgement(path.relative(ROOT, f), fs.readFileSync(f).toString("utf8"));
+      return RE.test(text);
     }).map((f) => path.relative(ROOT, f));
     expect(hits).toEqual([]);
+  });
+  it("appears in README.md only on a single acknowledgement line", () => {
+    const lines = fs.readFileSync(path.join(ROOT, "README.md"), "utf8").split("\n").filter((l) => RE.test(l));
+    expect(lines.length).toBeLessThanOrEqual(1);
+    for (const l of lines) expect(l.startsWith(ACK_PREFIX)).toBe(true);
   });
   it("does not appear in the git history's commit messages", () => {
     // best effort: .git/logs/HEAD holds commit subjects
