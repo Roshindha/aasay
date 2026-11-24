@@ -90,7 +90,7 @@ export function EvidenceGraphView({ graph, findings }: { graph: EvidenceGraph; f
 
   const graphCls = force === "list" ? "hidden" : force === "graph" ? "block" : "hidden md:block";
   const listCls = force === "list" ? "block" : force === "graph" ? "hidden" : "md:hidden";
-  const seg = (active: boolean) => `inline-flex h-7 items-center gap-1 px-2 text-xs font-medium ${active ? "bg-fg text-bg" : "bg-surface hover:bg-surface-2"}`;
+  const seg = (active: boolean) => `inline-flex h-7 items-center gap-1 px-2 text-xs font-medium ${active ? "bg-accent text-on-accent" : "bg-surface hover:bg-surface-2"}`;
 
   const path = (e: Edge) => {
     const a = L.pos.get(e.from), b = L.pos.get(e.to);

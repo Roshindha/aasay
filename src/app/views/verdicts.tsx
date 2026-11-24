@@ -53,7 +53,7 @@ function VerdictList({ findings }: { findings: Finding[] }) {
   }, [findings]);
   const lanes = useMemo(() => ["all", ...new Set(findings.map((f) => f.lane))], [findings]);
   const shown = findings.filter((f) => (label === "all" || f.label === label) && (lane === "all" || f.lanes.includes(lane as Finding["lane"])) && (!q || `${f.title} ${f.detail} ${f.file}`.toLowerCase().includes(q.toLowerCase())));
-  const chip = (active: boolean) => `h-7 rounded border px-2 text-xs font-medium ${active ? "border-fg bg-fg text-bg" : "border-line bg-surface hover:bg-surface-2"}`;
+  const chip = (active: boolean) => `h-7 rounded border px-2 text-xs font-medium ${active ? "border-accent bg-accent text-on-accent" : "border-line bg-surface hover:bg-surface-2"}`;
 
   if (findings.length === 0) return <EmptyState title="No findings">None of the four lanes reported anything for this scan.</EmptyState>;
 

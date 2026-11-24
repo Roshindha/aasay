@@ -86,7 +86,7 @@ function CurrentScan() {
 export function AuthorshipView() {
   const { source } = useApp();
   const [mode, setMode] = useState<Mode>(source === "live" ? "scan" : "fixtures");
-  const seg = (active: boolean) => `h-8 px-3 text-xs font-medium ${active ? "bg-fg text-bg" : "bg-surface hover:bg-surface-2"}`;
+  const seg = (active: boolean) => `h-8 px-3 text-xs font-medium ${active ? "bg-accent text-on-accent" : "bg-surface hover:bg-surface-2"}`;
   return (
     <div className="space-y-6">
       <p className="max-w-prose text-sm text-muted">Which signals of AI-assisted authorship does a repository contain, and is that disclosed? Assay lists signals with their strength and evidence. It never says who or what wrote the code.</p>

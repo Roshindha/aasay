@@ -2,14 +2,14 @@
 
 :root {
   color-scheme: dark;
-  --bg: #0d0f12;
-  --surface: #14171b;
-  --surface-2: #1b1f25;
-  --border: #2c333c;
-  --text: #e8eaed;
-  --text-muted: #9ca5b0;
-  --focus: #6aa5ff;
-  --link: #8ab8ff;
+  --bg: #0a0e1f;
+  --surface: #101730;
+  --surface-2: #18214a;
+  --border: #2a3668;
+  --text: #e9edfb;
+  --text-muted: #a3afd6;
+  --focus: #8aa9ff;
+  --link: #9db8ff;
 
   --confirmed-fg: #ff8f8f;
   --confirmed-bg: #3b1619;
@@ -18,7 +18,7 @@
   --likely-bg: #3a2a0e;
   --likely-solid: #f0a82e;
   --speculative-fg: #aab3be;
-  --speculative-bg: #262b33;
+  --speculative-bg: #1d2547;
   --speculative-solid: #7d8794;
 
   --pass-fg: #5fd49a;
@@ -26,21 +26,29 @@
   --fail-fg: var(--confirmed-fg);
   --fail-bg: var(--confirmed-bg);
 
-  --code-bg: #0a0c0f;
+  --code-bg: #070a16;
   --add-bg: #10301f;
   --del-bg: #3a1619;
+  --accent: #3d68e8;
+  --on-accent: #ffffff;
+  --side-bg: #070c24;
+  --side-line: #1c2750;
+  --side-text: #ffffff;
+  --side-muted: #aab6e0;
+  --side-active: #17235a;
+  --side-bar: #8aa9ff;
 }
 
 :root[data-theme="light"] {
   color-scheme: light;
-  --bg: #f5f6f8;
+  --bg: #f3f5fb;
   --surface: #ffffff;
-  --surface-2: #eef0f3;
-  --border: #d3d8df;
-  --text: #14181d;
-  --text-muted: #4a5360;
-  --focus: #1b5fd1;
-  --link: #1450b4;
+  --surface-2: #e9edf8;
+  --border: #c5cee8;
+  --text: #0f1730;
+  --text-muted: #46506e;
+  --focus: #2a52be;
+  --link: #1f43a3;
 
   --confirmed-fg: #a8201a;
   --confirmed-bg: #fde9e7;
@@ -49,15 +57,23 @@
   --likely-bg: #fcefd2;
   --likely-solid: #c07a00;
   --speculative-fg: #4a5360;
-  --speculative-bg: #e8ebef;
+  --speculative-bg: #e6eaf6;
   --speculative-solid: #7a8491;
 
   --pass-fg: #05683c;
   --pass-bg: #d9f3e5;
 
-  --code-bg: #f0f2f5;
+  --code-bg: #eef1fa;
   --add-bg: #dcf3e4;
   --del-bg: #fbe3e1;
+  --accent: #2a52be;
+  --on-accent: #ffffff;
+  --side-bg: #0c1a4d;
+  --side-line: #1d2f78;
+  --side-text: #ffffff;
+  --side-muted: #b3c0ee;
+  --side-active: #1d2f78;
+  --side-bar: #8aa9ff;
 }
 
 @theme inline {
@@ -67,6 +83,13 @@
   --color-line: var(--border);
   --color-fg: var(--text);
   --color-muted: var(--text-muted);
+  --color-accent: var(--accent);
+  --color-on-accent: var(--on-accent);
+  --color-side: var(--side-bg);
+  --color-side-line: var(--side-line);
+  --color-side-text: var(--side-text);
+  --color-side-muted: var(--side-muted);
+  --color-side-active: var(--side-active);
   --color-focus: var(--focus);
   --color-link: var(--link);
   --color-confirmed: var(--confirmed-fg);

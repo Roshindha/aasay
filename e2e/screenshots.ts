@@ -1,5 +1,5 @@
 /**
- * Capture every view at desktop and mobile widths against a running production server.
+ * Capture the README screenshots at desktop width against a running production server.
  *   pnpm build && pnpm start -p 3111   (in another terminal)
  *   pnpm screenshots docs/screenshots/after [theme: dark|light]
  */
@@ -8,10 +8,10 @@ import { chromium } from "@playwright/test";
 const out = process.argv[2] ?? "docs/screenshots/after";
 const theme = process.argv[3] ?? "dark";
 const base = process.env.ASSAY_URL ?? "http://localhost:3111";
-const VIEWS = ["seeded", "live", "verdicts", "graph", "authorship", "deps", "budget", "tournament", "handoffs"];
+const VIEWS = ["seeded", "verdicts", "authorship"];
 
 const browser = await chromium.launch();
-for (const [name, width, height] of [["desktop", 1440, 900], ["mobile", 390, 844]] as const) {
+for (const [name, width, height] of [["desktop", 1440, 900]] as const) {
   const ctx = await browser.newContext({ viewport: { width, height }, colorScheme: theme === "light" ? "light" : "dark", reducedMotion: "reduce" });
   const page = await ctx.newPage();
   await page.goto(base);

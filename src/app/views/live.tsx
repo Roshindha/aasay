@@ -28,7 +28,7 @@ export function LiveView() {
           <input id={inputId} value={url} onChange={(e) => setUrl(e.target.value)} placeholder="https://github.com/owner/repo/pull/123" inputMode="url" autoComplete="off" spellCheck={false}
             aria-describedby={hintId} aria-invalid={trimmed.length > 0 && !valid}
             className="h-9 flex-1 rounded border border-line bg-bg px-3 font-mono text-sm placeholder:text-muted" />
-          <button type="submit" disabled={!valid || loading} className="h-9 rounded bg-fg px-4 text-sm font-medium text-bg disabled:cursor-not-allowed disabled:opacity-50">
+          <button type="submit" disabled={!valid || loading} className="h-9 rounded bg-accent px-4 text-sm font-medium text-on-accent hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50">
             {loading ? "Scanning…" : "Scan"}
           </button>
         </div>

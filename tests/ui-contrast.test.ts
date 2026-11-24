@@ -22,9 +22,9 @@ const TEXT_PAIRS: Array<[string, string]> = [
   ["text", "bg"], ["text", "surface"], ["text", "surface-2"], ["text-muted", "bg"], ["text-muted", "surface"], ["text-muted", "surface-2"],
   ["confirmed-fg", "confirmed-bg"], ["likely-fg", "likely-bg"], ["speculative-fg", "speculative-bg"], ["pass-fg", "pass-bg"],
   ["confirmed-fg", "surface"], ["likely-fg", "surface"], ["speculative-fg", "surface"], ["pass-fg", "surface"],
-  ["link", "surface"], ["link", "bg"], ["text", "code-bg"], ["text", "add-bg"], ["text", "del-bg"],
+  ["link", "surface"], ["link", "bg"], ["on-accent", "accent"], ["side-text", "side-bg"], ["side-muted", "side-bg"], ["side-text", "side-active"], ["side-muted", "side-active"], ["text", "code-bg"], ["text", "add-bg"], ["text", "del-bg"],
 ];
-const GRAPHIC_PAIRS: Array<[string, string]> = [["focus", "bg"], ["focus", "surface"], ["confirmed-solid", "surface"], ["likely-solid", "surface"], ["speculative-solid", "surface"], ["border", "bg"]];
+const GRAPHIC_PAIRS: Array<[string, string]> = [["focus", "bg"], ["focus", "surface"], ["accent", "surface"], ["side-bar", "side-bg"], ["confirmed-solid", "surface"], ["likely-solid", "surface"], ["speculative-solid", "surface"], ["border", "bg"]];
 
 describe.each([["dark", dark], ["light", light]] as const)("%s theme contrast (WCAG 2.1 AA)", (_n, t) => {
   it.each(TEXT_PAIRS)("text %s on %s >= 4.5:1", (fg, bg) => {
