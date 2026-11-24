@@ -1,11 +1,5 @@
 @import "tailwindcss";
 
-/*
- * Design tokens. Dark is the default; light is applied via [data-theme="light"],
- * which an inline script in layout.tsx sets before first paint from localStorage or prefers-color-scheme.
- * Colour roles: "confirmed" and "likely" each get one accent, "speculative" is muted.
- * Severity is never expressed by hue (icon + text only), so labels keep exclusive use of the accents.
- */
 :root {
   color-scheme: dark;
   --bg: #0d0f12;

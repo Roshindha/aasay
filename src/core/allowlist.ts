@@ -1,7 +1,4 @@
-/**
- * The single place that decides which hosts Assay may talk to.
- * Every outbound HTTP call in the codebase goes through `allowlistedFetch`.
- */
+
 export const ALLOWED_HOSTS = ["api.github.com", "registry.npmjs.org", "pypi.org"] as const;
 
 export class HostNotAllowedError extends Error {

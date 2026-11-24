@@ -178,6 +178,22 @@ Findings carry file, line, specifier and registry status, and feed the evidence 
 
 For a finding, generators propose candidates (for bad imports: remove, replace, replace and declare, or declare). Each candidate is applied with `git apply` to a **copy** in a temp dir; one that doesn't apply, touches paths outside the tree, or fails a check (JSON validity, Python syntax) is **ineligible** and scores 0. Check subprocesses get an allowlisted environment: no variable whose name matches `KEY|TOKEN|SECRET|PASSWORD|…` ever reaches them (tested). Eligible patches are scored 0–1 on correctness (the review is re-run on the patched tree), minimality, safety, maintainability and testability.
 
+## Live scan verification
+
+The first real run used the actual code path (`scanGithub()`, no stubbed `fetch`, no `GITHUB_TOKEN`) on the default branch of the public repository acknowledged at the end of this README, on 2026-11-24.
+
+| | Result |
+|---|---|
+| Outcome | **Failed: GitHub's unauthenticated rate limit was reached** |
+| Time | 22.8 s |
+| GitHub requests | 60 of 60 used (limit 60 per hour; window resets 08:46 UTC) |
+| Files fetched, findings, authorship report | none: the scan threw instead of returning what it had |
+| Error shown | "GitHub rate limit reached. It resets at …. Set GITHUB_TOKEN on the server for a higher limit." (no token, URL or query string in the message) |
+
+That run exposed a real bug, fixed in the next commit (DECISIONS.md F48): the unauthenticated default of 80 files can never fit in 60 requests, and a rate limit while downloading files discarded the whole scan. Now unauthenticated scans default to 40 files, read commit history first, and, if the limit is hit anyway, return a **partial scan** with the files fetched so far, a "partial scan: GitHub rate limit reached…" note and the reset time. They never retry in a loop.
+
+**Not yet done:** the fixed code has been exercised against mocked GitHub responses (`tests/github-ratelimit.test.ts`) but not re-run against the real repository, because the hourly window had to reset first. To check it yourself: start `pnpm dev`, open **Live scan**, and paste the repository URL (optionally with `GITHUB_TOKEN` set on the server for a higher limit).
+
 ## Honest limitations
 
 - **Both benchmarks are self-authored.** The 11 planted bugs in `fixtures/seeded-demo` and the 9 authorship fixtures were written together with the detectors, so a perfect score shows the plumbing works end to end. It does **not** measure real-world accuracy. Live scans report no recall or precision because there is no ground truth.
@@ -220,7 +236,7 @@ _[Owner to fill in: anything else readers should know about how you worked.]_
 
 ## Acknowledgements
 
-Inspired by the public Scout project. <!-- TODO(owner): add the link to that project here -->
+Inspired by the public [Scout](https://github.com/esreekarreddy/scout) project.
 
 ## License and contributing
 
