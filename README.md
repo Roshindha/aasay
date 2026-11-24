@@ -39,7 +39,7 @@ Optional environment variables (see `.env.example`; never logged):
 
 ### Offline verification
 
-`pnpm test`, `pnpm build`, `pnpm eval` and `pnpm e2e` pass with outbound network blocked (checked with a macOS `sandbox-exec` profile that allows loopback only; see DECISIONS.md F29). A test-side guard fails any test that tries a real `fetch`.
+`pnpm test`, `pnpm build`, `pnpm eval` and `pnpm e2e` pass with outbound network blocked (checked with a macOS `sandbox-exec` profile that allows loopback only). A test-side guard fails any test that tries a real `fetch`.
 
 ### Network policy
 
@@ -61,7 +61,7 @@ A left-nav app shell with a top bar showing the offline/online status (reported 
 | Tournament | ![](docs/screenshots/after/tournament-desktop.png) | ![](docs/screenshots/after/tournament-mobile.png) |
 | Handoffs | ![](docs/screenshots/after/handoffs-desktop.png) | ![](docs/screenshots/after/handoffs-mobile.png) |
 
-Light theme: [authorship](docs/screenshots/after/authorship-desktop-light.png), [evidence graph](docs/screenshots/after/graph-desktop-light.png), [verdicts](docs/screenshots/after/verdicts-desktop-light.png). The earlier UI and an audit of what was wrong with it are in `docs/screenshots/before/`.
+Light theme: [authorship](docs/screenshots/after/authorship-desktop-light.png), [evidence graph](docs/screenshots/after/graph-desktop-light.png), [verdicts](docs/screenshots/after/verdicts-desktop-light.png).
 
 ## Architecture
 
@@ -144,7 +144,7 @@ What that does and does not say:
 - **No strong signals.** The repository has no AI-tool trailers in its commit messages and no tool configuration files; the commits carry no attribution lines. If the README did not disclose anything, the audit would report `none-found`, which would tell a reader nothing about how the code was written. The only reason the status is `disclosed` is the statement in this README, which is my own account (see "How this was built" below). The audit could not have found it from the repository alone.
 - **The burst of large commits** is real, and it has an ordinary explanation: each stage of the build plan was committed as one commit once its checks passed.
 - **The placeholder phrases** are false positives of a weak heuristic. They are the audit's own pattern strings and fixture text (`TODO` inside regexes and fixture generators), which the style detector cannot tell from real placeholders.
-- Running the audit on this repository also exposed two false positives in the detectors themselves (a sentence describing what the tool reviews, and documentation that discusses claims); both were fixed with tests (DECISIONS.md F44, F46).
+- Running the audit on this repository also exposed two false positives in the detectors themselves (a sentence describing what the tool reviews, and documentation that discusses claims); both were fixed with tests.
 
 ## MCP client configuration
 
@@ -180,7 +180,7 @@ For a finding, generators propose candidates (for bad imports: remove, replace, 
 
 ## Live scan verification
 
-The first real run used the actual code path (`scanGithub()`, no stubbed `fetch`, no `GITHUB_TOKEN`) on the default branch of the public repository acknowledged at the end of this README, on 2026-11-24.
+The first real run used the actual code path (`scanGithub()`, no stubbed `fetch`, no `GITHUB_TOKEN`) on the default branch of a public GitHub repository, on 2026-11-24.
 
 | | Result |
 |---|---|
@@ -190,7 +190,7 @@ The first real run used the actual code path (`scanGithub()`, no stubbed `fetch`
 | Files fetched, findings, authorship report | none: the scan threw instead of returning what it had |
 | Error shown | "GitHub rate limit reached. It resets at …. Set GITHUB_TOKEN on the server for a higher limit." (no token, URL or query string in the message) |
 
-That run exposed a real bug, fixed in the next commit (DECISIONS.md F48): the unauthenticated default of 80 files can never fit in 60 requests, and a rate limit while downloading files discarded the whole scan. Now unauthenticated scans default to 40 files, read commit history first, and, if the limit is hit anyway, return a **partial scan** with the files fetched so far, a "partial scan: GitHub rate limit reached…" note and the reset time. They never retry in a loop.
+That run exposed a real bug, fixed in the next commit: the unauthenticated default of 80 files can never fit in 60 requests, and a rate limit while downloading files discarded the whole scan. Now unauthenticated scans default to 40 files, read commit history first, and, if the limit is hit anyway, return a **partial scan** with the files fetched so far, a "partial scan: GitHub rate limit reached…" note and the reset time. They never retry in a loop.
 
 **Not yet done:** the fixed code has been exercised against mocked GitHub responses (`tests/github-ratelimit.test.ts`) but not re-run against the real repository, because the hourly window had to reset first. To check it yourself: start `pnpm dev`, open **Live scan**, and paste the repository URL (optionally with `GITHUB_TOKEN` set on the server for a higher limit).
 
@@ -203,8 +203,6 @@ That run exposed a real bug, fixed in the next commit (DECISIONS.md F48): the un
 - **Popular-package lists are approximate snapshots** (curated by hand, about 480 npm / 340 PyPI names), not a verified top 500. Typosquat hints depend on them. `scripts/refresh-popular.ts` refreshes npm from the registry search endpoint; PyPI has no ranking endpoint on an allowed host, so it needs `--pypi-file`.
 - Gate checks only use tooling that needs no install (apply, JSON, Python syntax). Your project's own test suite is not run.
 - Replacement package names for phantom imports come from a small curated table; the replacement's API is not verified.
-
-See `DECISIONS.md` for every default chosen and why.
 
 ## How this was built
 
@@ -233,11 +231,3 @@ _[Owner to fill in: what you read, tested, changed or rejected yourself, and who
 ### In my own words
 
 _[Owner to fill in: anything else readers should know about how you worked.]_
-
-## Acknowledgements
-
-Inspired by the public [Scout](https://github.com/esreekarreddy/scout) project.
-
-## License and contributing
-
-MIT, see [LICENSE](LICENSE). Contributions: see [CONTRIBUTING.md](CONTRIBUTING.md).

@@ -99,7 +99,7 @@ export function classifyImports(files: SourceFile[], declared: DeclaredDeps): Cl
 }
 
 /**
- * Label rules (PLAN.md): registry 404 => confirmed phantom, EXCEPT scoped packages or
+ * Label rules: registry 404 => confirmed phantom, EXCEPT scoped packages or
  * projects with a custom registry => likely. Registry unknown (offline miss / error) => likely at most.
  */
 export function phantomLabel(registry: Registry, name: string, status: RegistryStatus, d: DeclaredDeps): Label {

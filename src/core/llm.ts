@@ -3,7 +3,7 @@ import type { Finding, Lane, SourceFile } from "./types";
 /**
  * All model access goes through this interface. The heuristic client is the only implementation:
  * it is deterministic, offline, and never contacts a host. A model-backed client is deferred to a future module
- * that must bring its own explicit allowlist entry (see DECISIONS.md F26); nothing here reads API keys.
+ * that must bring its own explicit allowlist entry; nothing here reads API keys.
  */
 export interface LlmClient {
   readonly name: string;
